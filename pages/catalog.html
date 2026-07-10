@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos | Honda Avante</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="bg-slate-950 text-white font-sans antialiased flex flex-col min-h-screen overflow-hidden">
+
+    <!-- Navbar Fijo -->
+    <div id="navbar-placeholder" class="h-16 w-full fixed top-0 left-0 z-50"></div>
+
+    <!-- Contenedor Flex Principal -->
+    <div class="flex flex-1 mt-16">
+        
+        <!-- Sidebar Fijo -->
+        <div id="sidebar-placeholder" class="fixed top-16 left-0 w-44 h-[calc(100vh-4rem)] z-40"></div>
+
+        <!-- Contenido Principal Empujado -->
+        <main class="ml-44 flex-1 p-8 md:p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-800 pb-6">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tight flex items-center gap-3">
+                        <i class="fas fa-th-large text-red-600"></i> Catálogo Interactivo
+                    </h2>
+                    
+                    <p class="text-gray-500 text-sm mt-1">Explora refacciones, visualiza detalles técnicos y consulta sustitutos.</p>
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto items-center">
+                    <div class="relative flex-1 md:w-64">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                        <input type="text" id="search-catalog" placeholder="Buscar refacción..." class="w-full bg-slate-900 border border-gray-800 rounded-lg py-2 pl-10 pr-4 text-white focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 text-sm">
+                    </div>
+                    
+                    <div class="relative hidden md:block">
+                        <select id="categoryFilter" onchange="applyFilters()" class="custom-select w-full lg:w-64">
+                            <option value="all">Todas las Categorías</option>
+                        </select>
+                    </div>
+                    
+                    <button id="btn-admin-add" onclick="openCrudModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-red-600/20 flex items-center gap-2 text-sm whitespace-nowrap">
+                        <i class="fas fa-plus"></i> <span class="hidden sm:inline">Nueva Refacción</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor dinámico de refacciones -->
+            <div id="catalog-container" class="space-y-10 pb-10"></div>
+            
+        </main>
+    </div>
+
+    <!-- MODAL DE VISUALIZACIÓN DE PRODUCTO -->
+    <div id="productModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative shadow-2xl mx-4 transform scale-95 transition-transform duration-300" id="modalContent">
+            
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white bg-slate-800/50 hover:bg-red-600 rounded-full h-8 w-8 flex items-center justify-center transition-colors z-10">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="flex flex-col gap-4">
+                    <div class="bg-slate-800 rounded-xl aspect-square flex items-center justify-center border border-gray-700 overflow-hidden relative group" onmouseenter="detenerCarrusel()" onmouseleave="iniciarCarrusel()">
+                        <img id="main-modal-image" src="" alt="Producto" class="w-full h-full object-contain bg-slate-800 p-2 transition-transform duration-500 hidden">
+                        <i id="main-modal-icon" class="fas fa-image text-8xl text-gray-600"></i>
+                        
+                        <button onclick="prevImage()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10">
+                            <i class="fas fa-chevron-left text-sm"></i>
+                        </button>
+                        <button onclick="nextImage()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-red-600 text-white w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center z-10">
+                            <i class="fas fa-chevron-right text-sm"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 h-20" id="modal-thumbnails">
+                        <div onclick="setMainImage(0)" class="thumb-item bg-slate-800 rounded-lg cursor-pointer border-2 border-transparent overflow-hidden hover:opacity-80 transition-all flex items-center justify-center relative">
+                            <img id="thumb-img-0" src="" class="w-full h-full object-contain p-1 bg-slate-800 hidden">
+                            <i class="fas fa-image text-gray-600" id="thumb-icon-0"></i>
+                        </div>
+                        <div onclick="setMainImage(1)" class="thumb-item bg-slate-800 rounded-lg cursor-pointer border-2 border-transparent overflow-hidden hover:opacity-80 transition-all flex items-center justify-center relative">
+                            <img id="thumb-img-1" src="" class="w-full h-full object-contain p-1 bg-slate-800 hidden">
+                            <i class="fas fa-image text-gray-600" id="thumb-icon-1"></i>
+                        </div>
+                        <div onclick="setMainImage(2)" class="thumb-item bg-slate-800 rounded-lg cursor-pointer border-2 border-transparent overflow-hidden hover:opacity-80 transition-all flex items-center justify-center relative">
+                            <img id="thumb-img-2" src="" class="w-full h-full object-contain p-1 bg-slate-800 hidden">
+                            <i class="fas fa-image text-gray-600" id="thumb-icon-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span id="modal-category" class="text-xs text-red-500 font-bold tracking-widest uppercase mb-1">Categoría</span>
+                            <h2 id="modal-title" class="text-2xl font-black text-white mb-1 leading-tight">Nombre del Producto</h2>
+                            <p id="modal-sku" class="text-sm text-gray-400 font-mono">SKU: ---</p>
+                        </div>
+                        <button id="btn-edit-modal" class="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold shrink-0 hidden shadow-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-800/50 border border-gray-700/50 rounded-xl p-4 mb-6 grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Proveedor</p>
+                            <p id="modal-provider" class="text-sm font-medium text-white">---</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Existencias</p>
+                            <p id="modal-stock" class="text-sm font-bold text-green-400">---</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Descripción</p>
+                            <p id="modal-desc" class="text-xs text-gray-300 leading-relaxed">---</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <i class="fas fa-random text-gray-500"></i> Sustitutos Compatibles
+                        </h3>
+                        <div id="modal-substitutes" class="space-y-2"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CRUD (NUEVA REFACCIÓN) -->
+    <div id="crudModal" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-2xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-full" id="crudContent">
+            
+            <div class="flex justify-between items-center p-6 border-b border-gray-800 shrink-0">
+                <h3 id="crud-title" class="text-xl font-black text-white">Registrar Nueva Refacción</h3>
+                <button onclick="closeCrudModal()" class="text-gray-500 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <form id="crud-form" class="p-6 overflow-y-auto space-y-5 custom-scrollbar" onsubmit="submitProductForm(event)">
+                <input type="hidden" id="crud-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">SKU Único <span class="text-red-500">*</span></label>
+                        <input type="text" id="crud-sku" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500 font-mono disabled:opacity-50">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre de la Refacción <span class="text-red-500">*</span></label>
+                        <input type="text" id="crud-name" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categoría <span class="text-red-500">*</span></label>
+                        <select id="crud-category" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                            <option value="1">Refacciones Motor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subcategoría</label>
+                        <select id="crud-subcategory" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                            <option value="">Selecciona una subcategoría...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Proveedor <span class="text-red-500">*</span></label>
+                        <select id="crud-provider" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                            <option value="1">Honda OEM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Precio de Compra <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 text-gray-500 font-bold">$</span>
+                            <input type="number" step="0.01" id="crud-purchase-price" required min="0" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Precio de Venta Público <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 text-gray-500 font-bold">$</span>
+                            <input type="number" step="0.01" id="crud-sale-price" required min="0" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Stock Inicial</label>
+                        <input type="number" id="crud-stock" required min="0" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Descripción</label>
+                        <textarea id="crud-desc" rows="1" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500 resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-800">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-camera text-gray-500 mr-2"></i> Fotografías del Producto</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-[10px] text-gray-500 uppercase mb-1">Principal (1)</label>
+                            <input type="file" id="crud-image-1" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (2)</label>
+                            <input type="file" id="crud-image-2" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (3)</label>
+                            <input type="file" id="crud-image-3" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (4)</label>
+                            <input type="file" id="crud-image-4" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-800 shrink-0">
+                    <button type="button" onclick="closeCrudModal()" class="px-5 py-2 rounded-lg font-bold text-gray-400 hover:text-white hover:bg-slate-800 transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-red-600/20">Guardar Refacción</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="global-modal-placeholder"></div>
+    <div id="support-modal-placeholder"></div>
+    <div id="sparepart-modal-placeholder"></div>
+    <div id="my-movements-modal-placeholder"></div>
+
+    <script src="../assets/js/component-loader.js"></script>
+    <script src="../assets/js/movement-modal.js"></script>
+    <script src="../assets/js/sparepart-modal.js"></script>
+    <script src="../assets/js/catalog.js"></script>
+</body>
+</html>

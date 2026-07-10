@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Usuarios | Honda Avante</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="bg-slate-950 text-white font-sans antialiased flex flex-col min-h-screen overflow-hidden" data-admin-only="true">
+    
+    <div id="navbar-placeholder" class="h-16 w-full fixed top-0 left-0 z-50"></div>
+
+    <div class="flex flex-1 mt-16">
+        <div id="sidebar-placeholder" class="fixed top-16 left-0 w-44 h-[calc(100vh-4rem)] z-40"></div>
+        
+        <main class="ml-44 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto">
+            
+            <div class="mb-8 border-b border-gray-800 pb-6 flex justify-between items-end">
+                <div>
+                    <h2 class="text-3xl font-bold border-l-4 border-blue-600 pl-4">Gestión de Usuarios</h2>
+                    <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Administración de roles y accesos al sistema.</p>
+                </div>
+                <button onclick="openUserModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-lg shadow-blue-900/50 flex items-center gap-2">
+                    <i class="fas fa-user-plus"></i> Nuevo Usuario
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-950 border-b border-gray-800 text-gray-400 text-[10px] uppercase font-black tracking-wider">
+                        <tr>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Personal</th>
+                            <th class="p-4">Nivel de Acceso</th>
+                            <th class="p-4 text-center">Estado</th>
+                            <th class="p-4 text-right">Acciones de Seguridad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body" class="divide-y divide-gray-800">
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL ALTA DE USUARIO -->
+    <div id="userModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300" id="userContent">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-slate-950 rounded-t-2xl">
+                <h3 class="text-xl font-bold text-white"><i class="fas fa-user-shield text-blue-500 mr-2"></i> Alta de Personal</h3>
+                <button onclick="closeUserModal()" class="text-gray-500 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <form id="user-form" class="p-6 space-y-4" autocomplete="off">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre Completo</label>
+                    <input type="text" id="u-name" required class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition" placeholder="Ej. Juan Pérez">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Correo Corporativo</label>
+                    <input type="email" id="u-email" required autocomplete="off" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition" placeholder="correo@honda.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contraseña</label>
+                    <div class="relative group">
+                        <input type="password" id="u-password" required autocomplete="new-password" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 pr-10 text-white focus:outline-none focus:border-blue-500 transition" placeholder="Min. 8 caracteres">
+                        <button type="button" id="btn-toggle-pass" class="absolute right-3 top-3 text-gray-500 hover:text-blue-500 transition-colors focus:outline-none">
+                            <i class="fas fa-eye" id="icon-toggle-pass"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Confirmar Contraseña</label>
+                    <div class="relative group">
+                        <input type="password" id="u-password-confirm" required autocomplete="new-password" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 pr-10 text-white focus:outline-none focus:border-blue-500 transition" placeholder="Repite la contraseña">
+                        <button type="button" id="btn-toggle-confirm" class="absolute right-3 top-3 text-gray-500 hover:text-blue-500 transition-colors focus:outline-none">
+                            <i class="fas fa-eye" id="icon-toggle-confirm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Asignación de Rol</label>
+                    <select id="u-role" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition">
+                        <option value="Operador">Operador (Solo lectura/movimientos)</option>
+                        <option value="Supervisor">Supervisor (Catálogo y Reportes)</option>
+                        <option value="Administrador">Administrador (Acceso Total)</option>
+                    </select>
+                </div>
+                
+                <div class="mt-8">
+                    <button type="submit" id="btn-submit-user" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-900/50">
+                        Registrar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- NUEVO: MODAL EDITAR USUARIO -->
+    <div id="editUserModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300" id="editUserContent">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-slate-950 rounded-t-2xl">
+                <h3 class="text-xl font-bold text-white"><i class="fas fa-user-edit text-amber-500 mr-2"></i> Editar Usuario</h3>
+                <button onclick="closeEditUserModal()" class="text-gray-500 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <form id="edit-user-form" class="p-6 space-y-4" autocomplete="off" onsubmit="submitEditUser(event)">
+                <input type="hidden" id="e-user-id">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre Completo</label>
+                    <input type="text" id="e-name" required class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Correo Corporativo</label>
+                    <input type="email" id="e-email" required class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 transition">
+                </div>
+                
+                <div class="pt-4 border-t border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-3"><i class="fas fa-key mr-1"></i> Seguridad (Opcional)</p>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nueva Contraseña</label>
+                        <div class="relative group mb-4">
+                            <input type="password" id="e-password" autocomplete="new-password" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 pr-10 text-white focus:outline-none focus:border-amber-500 transition" placeholder="Déjalo en blanco para no cambiar">
+                            <button type="button" id="btn-toggle-edit-pass" class="absolute right-3 top-3 text-gray-500 hover:text-amber-500 transition-colors focus:outline-none">
+                                <i class="fas fa-eye" id="icon-toggle-edit-pass"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Confirmar Nueva Contraseña</label>
+                        <div class="relative group">
+                            <input type="password" id="e-password-confirm" autocomplete="new-password" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 pr-10 text-white focus:outline-none focus:border-amber-500 transition" placeholder="Repite la nueva contraseña">
+                            <button type="button" id="btn-toggle-edit-confirm" class="absolute right-3 top-3 text-gray-500 hover:text-amber-500 transition-colors focus:outline-none">
+                                <i class="fas fa-eye" id="icon-toggle-edit-confirm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <button type="submit" id="btn-submit-edit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-amber-900/50">
+                        Actualizar Datos
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL MODIFICAR ROL -->
+    <div id="roleModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-sm shadow-2xl p-6 transform scale-95 transition-transform duration-300" id="roleContent">
+            <h3 class="text-lg font-bold text-white mb-4">Modificar Nivel de Acceso</h3>
+            <p class="text-sm text-gray-400 mb-4">Selecciona el nuevo rol para <span id="r-name-display" class="font-bold text-blue-400"></span>.</p>
+            
+            <input type="hidden" id="r-user-id">
+            <select id="r-role" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-3 text-white mb-6">
+                <option value="Operador">Operador</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Administrador">Administrador</option>
+            </select>
+
+            <div class="flex gap-3">
+                <button onclick="closeRoleModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg transition">Cancelar</button>
+                <button onclick="saveNewRole()" id="btn-submit-role" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition shadow-lg shadow-blue-900/50">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVO: MODAL DE PERMISOS GRANULARES -->
+    <div id="permissions-modal" class="fixed inset-0 bg-black/90 hidden z-[100] flex items-center justify-center backdrop-blur-sm transition-opacity opacity-0">
+        <div id="permissions-content" class="bg-slate-900 border border-gray-700 rounded-2xl w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+            
+            <div class="bg-slate-950 px-6 py-5 border-b border-gray-800 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-white"><i class="fas fa-fingerprint text-emerald-500 mr-2"></i> Matriz de Permisos</h3>
+                    <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest font-bold">Usuario: <span id="perm-user-name" class="text-emerald-400">---</span></p>
+                </div>
+                <button onclick="closePermissionsModal()" class="text-gray-500 hover:text-white transition-colors text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 bg-slate-950/50">
+                <input type="hidden" id="perm-user-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="permissions-grid">
+                    <!-- El JavaScript inyectará los switches aquí -->
+                </div>
+            </div>
+
+            <div class="bg-slate-900 px-6 py-4 border-t border-gray-800">
+                <button onclick="savePermissions()" id="btn-save-perms" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)]">
+                    Guardar Configuración de Permisos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="my-movements-modal-placeholder"></div>
+    <div id="support-modal-placeholder"></div>
+    
+    <script src="../assets/js/component-loader.js"></script>
+    <script src="../assets/js/settings.js"></script>
+</body>
+</html>

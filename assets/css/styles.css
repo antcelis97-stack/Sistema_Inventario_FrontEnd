@@ -1,0 +1,73 @@
+/* Estilos personalizados Honda Avante */
+:root {
+    --honda-red: #dc2626;
+    --dark-bg: #0f172a;
+    --card-bg: #1e293b;
+}
+/*
+body {
+    background-color: var(--dark-bg);
+    overflow-x: hidden;
+}
+*/
+/* Efecto Neón para el borde rojo */
+.border-neon-red {
+    box-shadow: 0 4px 15px -3px rgba(220, 38, 38, 0.4);
+}
+
+/* Transición suave para inputs */
+input:focus {
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+/*movements styles*/
+/* Estilo para las filas de la tabla */
+#movements-body tr:last-child {
+    border-bottom: none;
+}
+
+/* Efecto para el badge de usuario */
+.responsable-tag {
+    font-family: 'Courier New', Courier, monospace;
+}
+/* ==========================================================================
+   CUSTOM SCROLLBAR VANGUARDISTA (Tema Dark / Honda Avante)
+   ========================================================================== */
+
+/* 1. Soporte para Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent; /* Pulgar color slate-700, fondo transparente */
+}
+
+/* 2. Soporte para Chrome, Edge, Safari, Opera */
+::-webkit-scrollbar {
+    width: 10px;  /* Ancho para el scroll vertical */
+    height: 10px; /* Alto para el scroll horizontal */
+}
+
+/* El "riel" por donde corre la barra */
+::-webkit-scrollbar-track {
+    background: transparent !important; /* Transparente para que tome el color de tu UI */
+}
+
+/* El "pulgar" (la barra que arrastras) */
+::-webkit-scrollbar-thumb {
+    background-color: #334155; /* slate-700 (Gris oscuro elegante) */
+    border-radius: 20px;       /* Bordes totalmente redondeados */
+    /* El siguiente truco hace que la barra parezca flotar con un margen */
+    border: 3px solid transparent !important; 
+    background-clip: content-box !important; /* Esto asegura que el color del pulgar no se vea afectado por el borde */
+}
+
+/* El "pulgar" cuando le pasas el ratón por encima (Efecto Hover) */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #dc2626; /* red-600 (Rojo Honda vibrante) */
+    /* Reducimos el borde transparente para que la barra se vea ligeramente más gruesa al enfocarla */
+    border: 2px solid transparent;
+}
+
+/* (Opcional) El pulgar cuando le das clic y lo arrastras */
+::-webkit-scrollbar-thumb:active {
+    background-color: #b91c1c; /* red-700 (Un rojo más intenso al hacer presión) */
+}

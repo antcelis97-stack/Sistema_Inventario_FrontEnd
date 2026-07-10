@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | Honda Avante</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="bg-slate-950 text-white font-sans antialiased flex flex-col min-h-screen overflow-hidden">
+    
+    <div id="navbar-placeholder" class="h-16 w-full fixed top-0 left-0 z-50"></div>
+
+    <div class="flex flex-1 mt-16">
+        <div id="sidebar-placeholder" class="fixed top-16 left-0 w-44 h-[calc(100vh-4rem)] z-40"></div>
+        
+        <main class="ml-44 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+            <div class="mb-8 border-b border-gray-800 pb-6">
+                <h2 class="text-3xl font-bold border-l-4 border-red-600 pl-4">Panel de Control</h2>
+                <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Resumen general del almacén de refacciones.</p>
+            </div>
+
+            <!-- CONTENEDOR DE KPIs INTERACTIVOS -->
+            <div id="kpis-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                
+                <!-- KPI: Catálogo -->
+                <div id="kpi-catalog-card" onclick="showCatalogDetails()" class="bg-slate-900 border border-gray-800 p-6 rounded-xl shadow-lg flex justify-between items-center cursor-pointer hover:bg-slate-800 hover:border-gray-600 hover:-translate-y-1 transition-all group" title="Ver estructura del catálogo">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1 group-hover:text-gray-300 transition-colors">Catálogo <i class="fas fa-hand-pointer ml-1 text-gray-600"></i></p>
+                        <h3 class="text-3xl font-black text-white" id="kpi-products">0</h3>
+                    </div>
+                    <div class="h-12 w-12 bg-slate-800 rounded-lg flex items-center justify-center text-gray-400 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-cogs"></i></div>
+                </div>
+                
+                <!-- KPI: Inversión Financiera -->
+                <div id="kpi-financial-card" onclick="showFinancialDetails()" class="bg-slate-900 border border-blue-900/40 p-6 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.05)] flex justify-between items-center cursor-pointer hover:bg-slate-800 hover:border-blue-700 hover:-translate-y-1 transition-all group" title="Ver distribución de capital">
+                    <div>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1 group-hover:text-blue-400 transition-colors">Inversión Almacén <i class="fas fa-hand-pointer ml-1 text-blue-500/50"></i></p>
+                        <h3 class="text-3xl font-black text-blue-400" id="kpi-value">$0.00</h3>
+                    </div>
+                    <div class="h-12 w-12 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-500 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-dollar-sign"></i></div>
+                </div>
+
+                <!-- KPI: Alertas de Stock -->
+                <div id="kpi-alerts-card" onclick="showLowStockAlerts()" class="bg-slate-900 border border-red-900/50 p-6 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.1)] flex justify-between items-center border-l-4 border-l-red-600 cursor-pointer hover:bg-slate-800 hover:-translate-y-1 transition-all group" title="Ver detalle de alertas">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1 group-hover:text-red-400 transition-colors">Alertas Stock <i class="fas fa-hand-pointer ml-1 text-red-500/50"></i></p>
+                        <h3 class="text-3xl font-black text-red-500" id="kpi-alerts">0</h3>
+                    </div>
+                    <div class="h-12 w-12 bg-red-500/10 rounded-lg flex items-center justify-center text-red-500 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-exclamation-triangle"></i></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 bg-slate-900 border border-gray-800 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Flujo de Movimientos (Últimos Meses)</h3>
+                    <div class="h-64"><canvas id="flowChart"></canvas></div>
+                </div>
+                <div class="bg-slate-900 border border-gray-800 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Estado del Stock</h3>
+                    <div class="h-64"><canvas id="stockChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
+                <div class="bg-slate-900 border border-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-gray-800 bg-slate-950/50">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fas fa-history text-blue-500 mr-2"></i> Actividad Reciente</h3>
+                    </div>
+                    <div id="recent-activity-body" class="divide-y divide-gray-800 flex-1 overflow-y-auto max-h-80 custom-scrollbar"></div>
+                </div>
+                
+                <div class="bg-slate-900 border border-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
+                    <div class="p-4 border-b border-gray-800 bg-slate-950/50 flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fas fa-fire text-orange-500 mr-2"></i> Mayor Rotación (Top 5)</h3>
+                        <span class="text-[10px] text-gray-400 bg-slate-800 px-2 py-1 rounded-full font-medium">Últimos 30 días</span>
+                    </div>
+                    <div class="flex-1 overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <tbody id="top-5-body" class="divide-y divide-gray-800 text-sm">
+                                <tr>
+                                    <td class="text-center p-8 text-gray-400">
+                                        <i class="fas fa-spinner fa-spin mr-2 text-orange-500"></i> Cargando...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="my-movements-modal-placeholder"></div>
+    <div id="support-modal-placeholder"></div>
+
+    <script src="../assets/js/component-loader.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+</body>
+</html>

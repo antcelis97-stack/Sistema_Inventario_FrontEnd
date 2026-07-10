@@ -1,0 +1,58 @@
+<nav class="bg-slate-900 border-b border-gray-800 w-full h-full flex items-center justify-between px-6 shadow-sm">
+    
+    <a href="../index.html" class="flex items-center gap-3 group cursor-pointer transition-all duration-300">
+        <img src="../assets/img/sistema/logo.png" alt="Logo Honda" class="h-8 w-auto object-contain group-hover:scale-105 transition-transform duration-300">
+        <h1 class="text-xl font-black tracking-tighter text-white group-hover:text-gray-200 transition-colors">
+            HONDA <span class="text-red-600 font-light group-hover:text-red-500 transition-colors">AVANTE</span>
+        </h1>
+    </a>
+    
+    <div class="flex items-center gap-4">
+        
+        <div id="navbar-notifications" class="relative">
+            <button onclick="window.location.href='approvals.html'" class="text-gray-400 hover:text-white transition-colors relative group p-2">
+                <i class="fas fa-bell text-xl group-hover:scale-110 transition-transform"></i>
+                <span id="notification-badge" class="absolute top-0 right-0 bg-red-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-slate-950 hidden">
+                    0
+                </span>
+            </button>
+        </div>
+
+        <div class="w-px h-8 bg-gray-800 mx-1"></div>
+
+        <div class="relative">
+            <button id="profile-menu-btn" class="flex items-center gap-3 focus:outline-none hover:bg-slate-800 p-1.5 rounded-xl transition-colors cursor-pointer group">
+                <div class="text-right hidden md:block">
+                    <p id="navbar-user-name" class="text-sm font-bold text-white leading-tight">Usuario</p>
+                    <p id="navbar-user-role" class="text-[10px] text-gray-400 tracking-widest font-mono uppercase">Operador</p>
+                </div>
+                
+                <div id="navbar-user-avatar" class="h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold border border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)] group-hover:shadow-[0_0_20px_rgba(220,38,38,0.6)] transition-shadow">
+                    U
+                </div>
+                
+                <i class="fas fa-chevron-down text-gray-500 text-xs transition-transform duration-300 ml-1" id="profile-chevron"></i>
+            </button>
+
+            <div id="profile-dropdown" class="absolute right-0 mt-3 w-56 bg-slate-900 border border-gray-800 rounded-xl shadow-2xl hidden flex-col py-2 z-50 transform origin-top-right transition-all">
+                
+                <div class="px-4 py-3 border-b border-gray-800 mb-2 md:hidden">
+                    <p class="text-sm font-bold text-white" id="dropdown-user-name">Usuario</p>
+                    <p class="text-[10px] text-gray-400 font-mono tracking-widest uppercase" id="dropdown-user-role">Rol</p>
+                </div>
+                <!--BOTÓN: MIS MOVIMIENTOS -->
+                <button onclick="openMyMovementsModal()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-blue-600/10 hover:text-blue-400 transition-colors text-left">
+                    <i class="fas fa-history w-5 text-center"></i> Mis Movimientos
+                </button>
+                <a href="#" id="manual-link" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-blue-600/10 hover:text-blue-400 transition-colors">
+                    <i class="fas fa-book w-5 text-center"></i> Manual de Uso
+                </a>
+                <div class="w-full h-px bg-gray-800 my-2"></div>
+                <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-300 hover:bg-red-600/10 hover:text-red-500 transition-colors text-left">
+                    <i class="fas fa-power-off w-5 text-center"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+    </div>
+</nav>

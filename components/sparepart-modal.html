@@ -1,0 +1,127 @@
+<div id="crudModal" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 p-4">
+    <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-2xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-full" id="crudContent">
+        
+        <div class="flex justify-between items-center p-6 border-b border-gray-800 shrink-0">
+            <h3 id="crud-title" class="text-xl font-black text-white">Registrar Nueva Refacción</h3>
+            <button onclick="closeCrudModal()" class="text-gray-500 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <form id="crud-form" class="p-6 overflow-y-auto space-y-5 custom-scrollbar" onsubmit="submitProductForm(event)">
+            <input type="hidden" id="crud-id">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">SKU Único <span class="text-red-500">*</span></label>
+                    <input type="text" id="crud-sku" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500 font-mono disabled:opacity-50">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre de la Refacción <span class="text-red-500">*</span></label>
+                    <input type="text" id="crud-name" required class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Categoría <span class="text-red-500">*</span></label>
+                    <select id="crud-category" required class="custom-select w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                        <option value="1">Refacciones Motor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subcategoría</label>
+                    <select id="crud-subcategory" class="custom-select w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                        <option value="">Selecciona una subcategoría...</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Proveedor <span class="text-red-500">*</span></label>
+                    <select id="crud-provider" required class="custom-select w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                        <option value="1">Honda OEM</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Precio de Compra Base <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-gray-500 font-bold">$</span>
+                        <input type="number" step="0.01" id="crud-purchase-price" required min="0" oninput="calcularPrecioVenta()" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Precio de Venta Público (Calculado)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 text-gray-500 font-bold">$</span>
+                        <input type="number" step="0.01" id="crud-sale-price" readonly class="w-full bg-slate-900 border border-gray-800 text-gray-400 rounded-lg pl-8 pr-4 py-2 focus:outline-none font-bold cursor-not-allowed">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN ACORDEÓN: EXCLUSIVA PARA ADMINISTRADORES -->
+            <div id="admin-finance-section" class="hidden pt-2">
+                <button type="button" onclick="toggleFinanceAccordion()" class="w-full bg-slate-950 hover:bg-slate-900 border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs font-black uppercase tracking-wider text-blue-400 hover:text-blue-300 transition-all">
+                    <span><i class="fas fa-calculator mr-2"></i> Configuración Financiera Avanzada</span>
+                    <i id="finance-accordion-icon" class="fas fa-chevron-down transition-transform"></i>
+                </button>
+                
+                <div id="finance-accordion-content" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-slate-950/50 rounded-b-xl border-x border-b border-transparent">
+                    <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Margen Utilidad (%)</label>
+                            <input type="number" id="crud-utility" min="0" max="500" value="30" oninput="calcularPrecioVenta()" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Impuesto IVA (%)</label>
+                            <input type="number" id="crud-iva" min="0" max="100" value="16" oninput="calcularPrecioVenta()" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Oferta / Descuento (%)</label>
+                            <input type="number" id="crud-discount" min="0" max="100" value="0" oninput="calcularPrecioVenta()" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Stock Inicial</label>
+                    <input type="number" id="crud-stock" required min="0" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Descripción</label>
+                    <textarea id="crud-desc" rows="1" class="w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500 resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-800">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-camera text-gray-500 mr-2"></i> Fotografías del Producto</label>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1">Principal (1)</label>
+                        <input type="file" id="crud-image-1" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (2)</label>
+                        <input type="file" id="crud-image-2" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (3)</label>
+                        <input type="file" id="crud-image-3" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 uppercase mb-1">Miniatura (4)</label>
+                        <input type="file" id="crud-image-4" accept="image/png, image/jpeg, image/webp" class="w-full text-[10px] text-gray-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 bg-slate-950 border border-gray-700 rounded p-1 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-800 shrink-0">
+                <button type="button" onclick="closeCrudModal()" class="px-5 py-2 rounded-lg font-bold text-gray-400 hover:text-white hover:bg-slate-800 transition-colors">Cancelar</button>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-red-600/20">Guardar Refacción</button>
+            </div>
+        </form>
+    </div>
+</div>

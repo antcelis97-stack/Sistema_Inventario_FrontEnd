@@ -1,0 +1,47 @@
+<!-- components/support-modal.html -->
+<div id="support-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center backdrop-blur-sm transition-opacity opacity-0 pointer-events-none">
+    <div id="support-content" class="bg-slate-900 border border-gray-700 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
+        <div class="bg-slate-950 px-6 py-4 border-b border-gray-800 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white"><i class="fas fa-headset text-blue-500 mr-2"></i> Soporte Técnico</h3>
+            <button onclick="closeSupportModal()" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-6">
+            <div class="text-center mb-6 relative">
+                <div class="h-20 w-20 bg-gradient-to-br from-blue-600/20 to-transparent text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl border border-blue-500/30 shadow-inner">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h4 class="text-xl font-black text-white">Honda Avante Soporte</h4>
+                <p class="text-[10px] text-gray-400 font-mono tracking-widest uppercase mt-1">Servicio de Soporte Técnico</p>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Botón de WhatsApp -->
+                <a href="https://wa.me/524771251150?text=Hola,%20necesito%20soporte%20con%20el%20sistema%20de%20Inventario%20de%20Honda" target="_blank" class="w-full bg-slate-950 border border-gray-800 hover:border-green-500/50 rounded-xl p-4 flex items-center gap-4 transition-all group shadow-sm">
+                    <div class="h-10 w-10 bg-green-500/10 text-green-500 rounded-lg flex items-center justify-center text-xl group-hover:bg-green-500 group-hover:text-white transition-colors">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-bold text-white">WhatsApp</p>
+                        <p class="text-[9px] text-gray-500 uppercase tracking-widest">Respuesta Rápida</p>
+                    </div>
+                </a>
+
+                <!-- Botón de Correo -->
+                <a href="mailto:antcelis97@gmail.com?subject=Reporte%20de%20Falla%20-%20Inventario%20Honda" class="w-full bg-slate-950 border border-gray-800 hover:border-blue-500/50 rounded-xl p-4 flex items-center gap-4 transition-all group shadow-sm">
+                    <div class="h-10 w-10 bg-blue-500/10 text-blue-500 rounded-lg flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-sm font-bold text-white">Correo Electrónico</p>
+                        <p class="text-[9px] text-gray-500 uppercase tracking-widest">Reporte de Bugs / Errores</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-800 text-center">
+                <p class="text-[10px] text-gray-500 font-mono tracking-wide">Honda Avante - Inventario Híbrido</p>
+                <p class="text-[10px] text-gray-600 font-mono mt-1">Versión 1.0.0 (Build 2026)</p>
+            </div>
+        </div>
+    </div>
+</div>
