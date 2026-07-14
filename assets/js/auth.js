@@ -218,7 +218,8 @@ window.handleAvatarUpload = async function(e) {
         formData.append('avatar', compressedFile, compressedFile.name);
 
         // Usamos POST en lugar de PUT porque FormData y archivos en Laravel a veces chocan con PUT
-        const response = await fetch(`http://127.0.0.1:8000/api/users/${userId}/avatar`, {
+        //https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
+        const response = await fetch(`https://sistema-inventario-ltei.onrender.com/api/users/${userId}/avatar`, {
             method: 'POST', 
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
             body: formData

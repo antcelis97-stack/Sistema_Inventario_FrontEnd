@@ -1,5 +1,5 @@
 // assets/js/settings.js
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 
 const availablePermissions = [
     { id: 'create_in', icon: 'fa-arrow-down', color: 'text-green-500', name: 'Crear Entradas', desc: 'Registrar ingreso de refacciones al almacén.', allowOperator: true },

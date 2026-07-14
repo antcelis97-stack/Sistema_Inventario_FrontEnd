@@ -1,5 +1,5 @@
 // assets/js/movement-modal.js
-const MOVEMENT_API_BASE_URL = 'http://127.0.0.1:8000/api';
+const CRUD_API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 
 window.initGlobalModalEvents = function() {
     const scannerInput = document.getElementById('g-scanner-input');
