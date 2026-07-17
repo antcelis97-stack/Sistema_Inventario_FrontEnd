@@ -3,8 +3,6 @@
 // ==========================================
 let allProducts = [];
 let viewingInactive = false; 
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
-
 document.addEventListener('DOMContentLoaded', () => {
     initCustomSelects();
     // ==========================================
@@ -37,7 +35,7 @@ async function fetchInventory() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/spare-parts`, { 
+        const response = await fetch(`${window.APP_API_URL}/spare-parts`, { 
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -277,7 +275,7 @@ window.toggleProductStatus = async function(id, currentName) {
     const token = localStorage.getItem('honda_token');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/spare-parts/${id}/toggle-status`, {
+        const response = await fetch(`${window.APP_API_URL}/spare-parts/${id}/toggle-status`, {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({ reason: confirmacion.value.trim() }) 
@@ -355,7 +353,7 @@ if (csvCatalogForm) {
 
         try {
             const token = localStorage.getItem('honda_token');
-            const response = await fetch(`${API_BASE_URL}/import/spare-parts-csv`, {
+            const response = await fetch(`${window.APP_API_URL}/import/spare-parts-csv`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -413,7 +411,7 @@ window.openStatusLogsModal = async function() {
     const token = localStorage.getItem('honda_token');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/movements/status-logs`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/status-logs`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

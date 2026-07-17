@@ -90,7 +90,7 @@ if (loginForm) {
         btnLogin.disabled = true;
 
         try {
-            const response = await fetch('https://sistema-inventario-ltei.onrender.com/api/login', { // http://127.0.0.1.8000/api/login para local, https://sistema-inventario-ltei.onrender.com/api/login para Render
+            const response = await fetch(`${window.APP_API_URL}/login`, { // http://127.0.0.1.8000/api/login para local, https://sistema-inventario-ltei.onrender.com/api/login para Render
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

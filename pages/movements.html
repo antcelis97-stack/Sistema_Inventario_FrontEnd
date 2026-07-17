@@ -5,6 +5,7 @@
     <title>Movimientos | Honda Avante</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <script src="../assets/js/config.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,31 +20,60 @@
         
         <main class="ml-48 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto">
             
-            <div class="mb-8 border-b border-gray-800 pb-6 flex flex-col xl:flex-row xl:justify-between xl:items-end gap-6">
-                <div>
-                    <h2 class="text-3xl font-bold border-l-4 border-red-600 pl-4">Historial de Movimientos</h2>
-                    <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Trazabilidad de entradas y salidas del almacén.</p>
+            <!-- ENCABEZADO Y CONTROLES -->
+            <div class="mb-6 border-b border-gray-800 pb-6 flex flex-col gap-5">
+                
+                <!-- Fila 1: Título y Botón Principal -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold border-l-4 border-red-600 pl-4">Historial de Movimientos</h2>
+                        <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Trazabilidad de entradas y salidas del almacén.</p>
+                    </div>
+                    
+                    <!-- Botón Nuevo Movimiento -->
+                    <button data-permission="create_in" onclick="openGlobalMovementModal()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 flex items-center justify-center text-sm shrink-0 whitespace-nowrap h-[42px]">
+                        <i class="fas fa-plus mr-2"></i> Nuevo Movimiento
+                    </button>
                 </div>
         
-                <div class="flex flex-col sm:flex-row items-center gap-4">
+                <!-- Fila 2: PANEL DE FILTROS -->
+                <div class="flex flex-wrap items-center gap-3 w-full bg-slate-900/50 p-3 rounded-xl border border-gray-800/80">
                     
-                    <!-- Filtro nativo en HTML (Sin data-permissions y con diseño oscuro) -->
-                    <div class="flex items-center gap-3 w-full sm:w-auto bg-slate-900 border border-gray-800 rounded-lg px-3 py-1 shadow-inner">
-                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider hidden md:block">Clasificación:</label>
-                        <select id="filter-type" onchange="applyMovementFilters()" class="custom-select w-full sm:w-auto">
-                            <option value="Todos" class="bg-slate-900 text-white">Todos los movimientos</option>
-                            <option value="Entradas" class="bg-slate-900 text-white">Entradas Libres</option>
-                            <option value="Salidas" class="bg-slate-900 text-white">Salidas Libres</option>
-                            <option value="Devoluciones" class="bg-slate-900 text-white">Devoluciones</option>
-                            <option value="Ajustes" class="bg-slate-900 text-white">Ajustes (Cambios/Rechazos)</option>
-                        </select>
+                    <!-- Filtro Fecha Desde -->
+                    <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors flex-1 min-w-[140px]">
+                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-2 hidden sm:block">Desde:</span>
+                        <input type="date" id="filter-date-start" onchange="applyMovementFilters()" class="bg-transparent text-xs text-gray-200 focus:outline-none [color-scheme:dark] cursor-pointer w-full">
                     </div>
 
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <!-- Botón Nuevo Movimiento: Protegido por data-permission -->
-                        <button data-permission="create_in" onclick="openGlobalMovementModal()" class="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 flex items-center justify-center text-sm">
-                            <i class="fas fa-plus mr-2"></i> Nuevo Movimiento
-                        </button>
+                    <!-- Filtro Fecha Hasta -->
+                    <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors flex-1 min-w-[140px]">
+                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-2 hidden sm:block">Hasta:</span>
+                        <input type="date" id="filter-date-end" onchange="applyMovementFilters()" class="bg-transparent text-xs text-gray-200 focus:outline-none [color-scheme:dark] cursor-pointer w-full">
+                    </div>
+
+                    <!-- Filtro Estado -->
+                    <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors relative flex-1 min-w-[160px]">
+                        <i class="fas fa-clipboard-check text-gray-500 mr-2"></i>
+                        <select id="filter-status" onchange="applyMovementFilters()" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8 w-full">
+                            <option value="Todos" class="bg-slate-900">Todos los estados</option>
+                            <option value="approved" class="bg-slate-900 text-green-400">Aprobados</option>
+                            <option value="pending" class="bg-slate-900 text-yellow-400">En Revisión</option>
+                            <option value="rejected" class="bg-slate-900 text-red-400">Rechazados</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-3 text-gray-500 text-[10px] pointer-events-none"></i>
+                    </div>
+
+                    <!-- Filtro Clasificación -->
+                    <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors relative flex-1 min-w-[180px]">
+                        <i class="fas fa-tags text-gray-500 mr-2"></i>
+                        <select id="filter-type" onchange="applyMovementFilters()" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8 w-full">
+                            <option value="Todos" class="bg-slate-900">Todas las clasificaciones</option>
+                            <option value="Entradas" class="bg-slate-900">Entradas</option>
+                            <option value="Salidas" class="bg-slate-900">Salidas</option>
+                            <option value="Devoluciones" class="bg-slate-900">Devoluciones</option>
+                            <option value="Ajustes" class="bg-slate-900">Ajustes / Reembolsos</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-3 text-gray-500 text-[10px] pointer-events-none"></i>
                     </div>
                 </div>
             </div>
@@ -68,7 +98,6 @@
             
         </main>
     </div>
-
 
     <!-- MODAL DE FOTOS -->
     <div id="photo-modal" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center backdrop-blur-md transition-opacity opacity-0">

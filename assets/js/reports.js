@@ -1,7 +1,5 @@
 // assets/js/reports.js
 let currentReportData = [];
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
-
 const currencyFormatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchFinancialDashboard() {
     const token = localStorage.getItem('honda_token');
     try {
-        const response = await fetch(`${API_BASE_URL}/reports/financial`, {
+        const response = await fetch(`${window.APP_API_URL}/reports/financial`, {
             method: 'GET', headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const json = await response.json();
@@ -105,7 +103,7 @@ async function handleReportGeneration(e) {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/reports/generate`, {
+        const response = await fetch(`${window.APP_API_URL}/reports/generate`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(payload)

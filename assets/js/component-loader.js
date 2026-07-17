@@ -152,7 +152,7 @@ window.checkPendingApprovals = async function() {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch('http://127.0.0.1:8000/api/movements/pending', {
+        const response = await fetch(`${window.APP_API_URL}/movements/pending`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -201,7 +201,7 @@ window.openMyMovementsModal = async function() {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch('http://127.0.0.1:8000/api/movements/my-movements', {
+        const response = await fetch(`${window.APP_API_URL}/movements/my-movements`, { // http://
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

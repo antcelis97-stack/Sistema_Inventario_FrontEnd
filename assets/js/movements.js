@@ -1,8 +1,6 @@
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 let allMovements = []; // Base de datos local
 
 document.addEventListener('DOMContentLoaded', () => {
-    
     // ==========================================
     // SEGURIDAD: Ocultar botón CSV a Operadores
     // ==========================================
@@ -11,76 +9,79 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userRole === 'Operador' && btnImportCsv) {
         btnImportCsv.style.display = 'none';
     }
-    // 1. Inyectar el filtro de HTML crudo en la pantalla
-    injectFilterUI();
-    //Transformar el select a diseño moderno una vez que ya existe en el DOM
+    
+    // Transformar selects nativos si tienes librería custom
     if (typeof initCustomSelects === 'function') {
         initCustomSelects();
     }
-    // 2. Traer los datos de la tabla
+    
+    // Traer los datos de la tabla
     fetchMovements();
     
     const csvForm = document.getElementById('csv-form');
     if (csvForm) csvForm.addEventListener('submit', submitCsvImport);
 });
 
-function injectFilterUI() {
-    // Busca el header o título de la tabla e inyecta el select al lado
-    const headerRow = document.querySelector('h2.text-3xl')?.parentElement;
-    if (headerRow && !document.getElementById('filter-type')) {
-        headerRow.innerHTML += `
-        <div class="mt-4 sm:mt-0 flex items-center gap-3">
-            <label class="text-xs font-bold text-gray-500 uppercase">Clasificación:</label>
-            <select id="filter-type" onchange="applyMovementFilters()" class="bg-slate-900 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500 shadow-md [color-scheme:dark]">
-                <option value="Todos" class="bg-slate-900 text-white">Todos</option>
-                <option value="Entradas" class="bg-slate-900 text-white">Entradas Libres</option>
-                <option value="Salidas" class="bg-slate-900 text-white">Salidas Libres</option>
-                <option value="Devoluciones" class="bg-slate-900 text-white">Devoluciones (Enviadas/Recibidas)</option>
-                <option value="Ajustes" class="bg-slate-900 text-white">Ajustes (Cambios/Reembolsos/Rechazos)</option>
-            </select>
-        </div>`;
-        headerRow.classList.add('flex', 'justify-between', 'items-end');
-    }
-}
-
 async function fetchMovements() {
     const token = localStorage.getItem('honda_token');
     const tbody = document.getElementById('movements-body');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/movements`, {
+        const response = await fetch(`${window.APP_API_URL}/movements`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         allMovements = await response.json();
-        applyMovementFilters(); // Renderiza usando el filtro actual
+        applyMovementFilters(); // Renderiza usando los filtros actuales
     } catch (error) {
         console.error('Error al cargar movimientos:', error);
         if(tbody) tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-red-500">Error de conexión.</td></tr>';
     }
 }
 
-function applyMovementFilters() {
-    const typeVal = document.getElementById('filter-type') ? document.getElementById('filter-type').value : 'Todos';
+// ==========================================
+// MOTOR DE FILTRADO MULTI-CRITERIO
+// ==========================================
+window.applyMovementFilters = function() {
+    const typeVal = document.getElementById('filter-type')?.value || 'Todos';
+    const statusVal = document.getElementById('filter-status')?.value || 'Todos';
+    const dateStart = document.getElementById('filter-date-start')?.value;
+    const dateEnd = document.getElementById('filter-date-end')?.value;
 
     const filtered = allMovements.filter(mov => {
         // Excluir SIEMPRE los STATUS_LOG (Habilitar/Inhabilitar) de esta pantalla
         if (mov.type === 'STATUS_LOG') return false;
 
+        // 1. EVALUACIÓN DE CLASIFICACIÓN
         const razon = mov.reason || '';
         const isDevolucion = razon.includes('Devolución') || mov.reason === 'Esperando Resolución de Proveedor'; 
         const isAjuste = razon.includes('Ajuste') || mov.status === 'rejected' || parseFloat(mov.refund_amount) > 0;
-
-        if (typeVal === 'Todos') return true;
-        if (typeVal === 'Entradas') return (mov.type === 'IN') && !isDevolucion && !isAjuste;
-        if (typeVal === 'Salidas') return (mov.type === 'OUT') && !isDevolucion && !isAjuste;
-        if (typeVal === 'Devoluciones') return isDevolucion;
-        if (typeVal === 'Ajustes') return isAjuste;
         
-        return true;
+        let passType = true;
+        if (typeVal === 'Entradas') passType = (mov.type === 'IN') && !isDevolucion && !isAjuste;
+        else if (typeVal === 'Salidas') passType = (mov.type === 'OUT') && !isDevolucion && !isAjuste;
+        else if (typeVal === 'Devoluciones') passType = isDevolucion;
+        else if (typeVal === 'Ajustes') passType = isAjuste;
+
+        // 2. EVALUACIÓN DE ESTADO
+        let passStatus = true;
+        if (statusVal !== 'Todos') {
+            passStatus = (mov.status === statusVal);
+        }
+
+        // 3. EVALUACIÓN DE FECHAS (Corte exacto de cadena YYYY-MM-DD para evitar fallos de zona horaria)
+        let passDate = true;
+        if (dateStart || dateEnd) {
+            const movDateStr = mov.created_at.split('T')[0]; // Extrae solo la fecha '2026-07-16'
+            
+            if (dateStart && movDateStr < dateStart) passDate = false;
+            if (dateEnd && movDateStr > dateEnd) passDate = false;
+        }
+
+        return passType && passStatus && passDate;
     });
 
     renderMovementsTable(filtered);
-}
+};
 
 function renderMovementsTable(data) {
     const tbody = document.getElementById('movements-body');
@@ -88,7 +89,7 @@ function renderMovementsTable(data) {
     tbody.innerHTML = '';
 
     if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center p-8 text-gray-500">No hay movimientos con este filtro.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center p-12 text-gray-500 bg-slate-900/50"><i class="fas fa-search-minus text-4xl mb-3 opacity-30 block"></i> No se encontraron movimientos con estos filtros.</td></tr>';
         return;
     }
 
@@ -123,7 +124,6 @@ function renderMovementsTable(data) {
         let approverColor = 'text-yellow-500';
 
         if (mov.status === 'approved' || mov.status === 'rejected') {
-            // Si Laravel mandó el objeto approver, lo usamos; si no, asumimos que fue el creador si se aprobó
             approverName = mov.approver ? mov.approver.name : (mov.status === 'approved' ? creatorName : 'Sistema');
             approverColor = mov.status === 'rejected' ? 'text-red-500' : 'text-green-500';
         }
@@ -166,8 +166,9 @@ function renderMovementsTable(data) {
         `;
     });
 }
+
 // ==========================================
-// 3. IMPORTACIÓN MASIVA VÍA CSV
+// IMPORTACIÓN MASIVA VÍA CSV Y FOTOS 
 // ==========================================
 function openCsvModal() {
     document.getElementById('csv-modal').classList.remove('hidden');
@@ -202,38 +203,33 @@ async function submitCsvImport(e) {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/import/movements-csv`, {
+        const response = await fetch(`${window.APP_API_URL}/import/movements-csv`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            },
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
             body: formData
         });
 
         const data = await response.json();
 
         if (response.ok && data.status) {
-                if (data.errores && data.errores.length > 0) {
-                    showAppAlert("Importación con Advertencias", `El archivo se procesó, pero hubo ${data.errores.length} registros omitidos. Revisa la consola.`, "warning");
-                } else {
-                    showAppAlert("¡Éxito!", data.message, "success");
-                }
-                closeCsvModal();
-                fetchMovements(); 
+            if (data.errores && data.errores.length > 0) {
+                showAppAlert("Importación con Advertencias", `El archivo se procesó, pero hubo ${data.errores.length} registros omitidos. Revisa la consola.`, "warning");
             } else {
-                showAppAlert("Error", data.message || 'Error al procesar el archivo.', "error");
+                showAppAlert("¡Éxito!", data.message, "success");
             }
-        } catch (error) {
-            showAppAlert("Fallo Crítico", "Error de conexión con el servidor. Verifica que Laravel esté corriendo.", "error");
-        } finally {
+            closeCsvModal();
+            fetchMovements(); 
+        } else {
+            showAppAlert("Error", data.message || 'Error al procesar el archivo.', "error");
+        }
+    } catch (error) {
+        showAppAlert("Fallo Crítico", "Error de conexión con el servidor. Verifica que Laravel esté corriendo.", "error");
+    } finally {
         btnSubmitCsv.disabled = false;
         btnSubmitCsv.innerHTML = originalText;
     }
 }
-// ==========================================
-// 4. VISOR DE FOTOGRAFÍAS A PANTALLA COMPLETA
-// ==========================================
+
 window.openPhotoModal = function(url) {
     const modal = document.getElementById('photo-modal');
     document.getElementById('photo-viewer-img').src = url;

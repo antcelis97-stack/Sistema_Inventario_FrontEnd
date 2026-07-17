@@ -3,7 +3,6 @@ let realDatabase = [];
 let modalImages = [];
 let currentImageIndex = 0;
 let carouselInterval;
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAccess();
@@ -26,7 +25,7 @@ async function fetchCatalog() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/spare-parts`, { 
+        const response = await fetch(`${window.APP_API_URL}/spare-parts`, { 
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });

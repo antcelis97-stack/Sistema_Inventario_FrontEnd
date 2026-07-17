@@ -37,9 +37,19 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Proveedor <span class="text-red-500">*</span></label>
-                    <select id="crud-provider" required class="custom-select w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
-                        <option value="1">Honda OEM</option>
-                    </select>
+                    <div class="flex gap-2 items-center">
+                        <!-- El contenedor custom-select-wrapper tomará el ancho restante -->
+                        <div class="flex-1 w-full relative">
+                            <select id="crud-provider" required class="custom-select w-full bg-slate-950 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                                <option value="">Cargando proveedores...</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Botón de Creación Rápida -->
+                        <button type="button" onclick="promptNewProvider()" class="bg-blue-600 hover:bg-blue-500 text-white h-[42px] px-4 rounded-lg font-bold transition-all shadow-lg shadow-blue-900/20" title="Agregar nuevo proveedor">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -96,6 +106,15 @@
                 </div>
             </div>
 
+            <!-- NUEVO: SECCIÓN DE SUSTITUTOS -->
+            <div class="col-span-full mt-2 mb-4">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sustitutos Compatibles</label>
+                <button type="button" onclick="openSubstituteModal()" class="w-full bg-slate-950 border border-gray-700 hover:border-blue-500 text-gray-300 hover:text-white px-4 py-3 rounded-xl flex justify-between items-center transition-all">
+                    <span><i class="fas fa-random mr-2 text-blue-500"></i> Gestionar Sustitutos</span>
+                    <span id="substitutes-count-badge" class="bg-gray-800 text-gray-400 font-black text-[10px] px-2 py-1 rounded-md">0 seleccionados</span>
+                </button>
+            </div>
+
             <div class="pt-4 border-t border-gray-800">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fas fa-camera text-gray-500 mr-2"></i> Fotografías del Producto</label>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -123,5 +142,39 @@
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-red-600/20">Guardar Refacción</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- MODAL HIJO: GESTIÓN DE SUSTITUTOS -->
+<div id="substituteModal" class="fixed inset-0 z-[150] bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center opacity-0 transition-opacity duration-300">
+    <div id="substituteContent" class="bg-slate-900 border border-gray-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]">
+        
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-black text-white"><i class="fas fa-random text-blue-500 mr-2"></i> Sustitutos</h3>
+            <button type="button" onclick="closeSubstituteModal()" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-times text-xl"></i></button>
+        </div>
+
+        <!-- Buscador Inteligente -->
+        <div class="relative mb-4">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-500"></i>
+            </div>
+            <input type="text" id="sub-search-input" placeholder="Buscar por nombre o SKU..." class="w-full bg-slate-950 border border-gray-700 text-white rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors placeholder-gray-600">
+            
+            <!-- Resultados Desplegables -->
+            <ul id="sub-results" class="absolute z-10 w-full bg-slate-900 border border-gray-700 mt-1 rounded-xl shadow-2xl hidden max-h-48 overflow-y-auto divide-y divide-gray-800 custom-scrollbar"></ul>
+        </div>
+
+        <!-- Lista de Seleccionados -->
+        <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Refacciones Seleccionadas</p>
+            <div id="selected-substitutes-list" class="space-y-2">
+                <!-- Se inyectan con JS -->
+            </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-gray-800 flex justify-end">
+            <button type="button" onclick="closeSubstituteModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">Aceptar Selección</button>
+        </div>
     </div>
 </div>

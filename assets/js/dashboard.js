@@ -1,6 +1,5 @@
 let flowChartInstance = null;
 let stockChartInstance = null;
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 
 window.initDashboard = function() {
     Chart.defaults.color = '#94a3b8'; 
@@ -47,7 +46,7 @@ function applyRoleSecurityToKPIs() {
 async function loadDashboardData() {
     const token = localStorage.getItem('honda_token');
     try {
-        const response = await fetch(`${API_BASE_URL}/dashboard/metrics`, {
+        const response = await fetch(`${window.APP_API_URL}/dashboard/metrics`, {
             method: 'GET', headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const result = await response.json();
@@ -67,7 +66,7 @@ async function loadDashboardData() {
 async function fetchTopOutbounds() {
     const token = localStorage.getItem('honda_token');
     try {
-        const response = await fetch(`${API_BASE_URL}/reports/financial`, {
+        const response = await fetch(`${window.APP_API_URL}/reports/financial`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const json = await response.json();
@@ -113,7 +112,7 @@ window.showCatalogDetails = async function() {
     Swal.fire({ title: 'Analizando Catálogo...', background: '#0f172a', color: '#f8fafc', didOpen: () => { Swal.showLoading(); }});
 
     try {
-        const response = await fetch(`${API_BASE_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('honda_token')}` }});
+        const response = await fetch(`${window.APP_API_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('honda_token')}` }});
         const json = await response.json();
         
         if (response.ok && json.status) {
@@ -182,8 +181,8 @@ window.showFinancialDetails = async function() {
         const token = localStorage.getItem('honda_token');
         // Descargamos Refacciones y Movimientos simultáneamente para mayor velocidad
         const [partsRes, movsRes] = await Promise.all([
-            fetch(`${API_BASE_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${token}` } }),
-            fetch(`${API_BASE_URL}/movements`, { headers: { 'Authorization': `Bearer ${token}` } })
+            fetch(`${window.APP_API_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${token}` } }),
+            fetch(`${window.APP_API_URL}/movements`, { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
 
         const partsJson = await partsRes.json();
@@ -373,7 +372,7 @@ window.showLowStockAlerts = async function() {
     Swal.fire({ title: 'Analizando Almacén...', background: '#0f172a', color: '#f8fafc', didOpen: () => { Swal.showLoading(); }});
 
     try {
-        const response = await fetch(`${API_BASE_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('honda_token')}` }});
+        const response = await fetch(`${window.APP_API_URL}/spare-parts`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('honda_token')}` }});
         const json = await response.json();
         
         if (response.ok && json.status) {

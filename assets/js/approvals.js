@@ -1,7 +1,6 @@
 // ==========================================
 // CONFIGURACIÓN GLOBAL
 // ==========================================
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
 let allPending = [];
 let allRejected = [];
 let fetchedRejected = false;
@@ -20,7 +19,7 @@ async function fetchPendingApprovals() {
     const token = localStorage.getItem('honda_token');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/movements/pending`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/pending`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -45,7 +44,7 @@ async function fetchRejectedApprovals() {
     container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4 text-red-600"></i><p>Cargando historial de rechazados...</p></div>`;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/movements/rejected`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/rejected`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -219,7 +218,7 @@ window.processMovement = async function(id, action) {
 
     const token = localStorage.getItem('honda_token');
     try {
-        const response = await fetch(`${API_BASE_URL}/movements/${id}/${action}`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/${id}/${action}`, {
             method: 'PATCH',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -254,7 +253,7 @@ window.promptRejectMovement = async function(id, partName) {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/movements/${id}/reject`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/${id}/reject`, {
             method: 'PATCH', 
             headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({ rejection_reason: reason.trim() })
@@ -395,7 +394,7 @@ window.submitResolution = async function() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Procesando...';
         
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/movements/${id}/resolve`, {
+        const response = await fetch(`${window.APP_API_URL}/movements/${id}/resolve`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,

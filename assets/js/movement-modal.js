@@ -1,6 +1,4 @@
 // assets/js/movement-modal.js
-const CRUD_API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
-
 window.initGlobalModalEvents = function() {
     const scannerInput = document.getElementById('g-scanner-input');
     
@@ -27,7 +25,7 @@ window.initGlobalModalEvents = function() {
                 resultsList.classList.add('hidden'); 
                 
                 try {
-                    const response = await fetch(`${MOVEMENT_API_BASE_URL}/spare-parts/search-smart/${term}`, {
+                    const response = await fetch(`${window.APP_API_URL}/spare-parts/search-smart/${term}`, {
                         headers: { 'Authorization': `Bearer ${localStorage.getItem('honda_token')}` }
                     });
                     const data = await response.json();
@@ -263,7 +261,7 @@ async function submitGlobalMovement(e) {
         if (photo1) formData.append('photo_1', photo1, photo1.name);
         if (photo2) formData.append('photo_2', photo2, photo2.name);
 
-        const response = await fetch(`${MOVEMENT_API_BASE_URL}/movements`, {
+        const response = await fetch(`${window.APP_API_URL}/movements`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('honda_token')}`,

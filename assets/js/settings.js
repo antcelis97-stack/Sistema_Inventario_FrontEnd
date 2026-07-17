@@ -1,6 +1,4 @@
 // assets/js/settings.js
-const API_BASE_URL = 'https://sistema-inventario-ltei.onrender.com/api';// http://127.0.0.1:8000/api para el local, https://sistema-inventario-ltei.onrender.com/api para el servidor en Render
-
 const availablePermissions = [
     { id: 'create_in', icon: 'fa-arrow-down', color: 'text-green-500', name: 'Crear Entradas', desc: 'Registrar ingreso de refacciones al almacén.', allowOperator: true },
     { id: 'create_out', icon: 'fa-arrow-up', color: 'text-red-500', name: 'Crear Salidas', desc: 'Registrar ventas, mermas o devoluciones.', allowOperator: true },
@@ -36,7 +34,7 @@ async function loadUsers() {
     const tbody = document.getElementById('users-table-body');
     
     try {
-        const response = await fetch(`${API_BASE_URL}/users`, {
+        const response = await fetch(`${window.APP_API_URL}/users`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const json = await response.json();
@@ -167,7 +165,7 @@ window.submitEditUser = async function(e) {
 
     try {
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+        const response = await fetch(`${window.APP_API_URL}/users/${id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -226,7 +224,7 @@ async function createNewUser(e) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/users`, {
+        const response = await fetch(`${window.APP_API_URL}/users`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('honda_token')}`,
@@ -262,7 +260,7 @@ async function saveNewRole() {
     btn.innerText = 'Guardando...';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/users/${id}/role`, {
+        const response = await fetch(`${window.APP_API_URL}/users/${id}/role`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('honda_token')}`,
@@ -308,7 +306,7 @@ function toggleUser(id, name) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                const response = await fetch(`${API_BASE_URL}/users/${id}/toggle-status`, {
+                const response = await fetch(`${window.APP_API_URL}/users/${id}/toggle-status`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('honda_token')}`,
@@ -456,7 +454,7 @@ window.savePermissions = async function() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Procesando Matrix...';
         
         const token = localStorage.getItem('honda_token');
-        const response = await fetch(`${API_BASE_URL}/users/${userId}/permissions`, {
+        const response = await fetch(`${window.APP_API_URL}/users/${userId}/permissions`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
