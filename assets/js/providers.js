@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
             
             // Obtenemos el token de sesión (Ajusta el nombre 'auth_token' si en tu sistema lo guardas diferente)
-            const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+            const token = localStorage.getItem('honda_token');
 
             const response = await fetch(`${API_URL}/proveedores`, {
                 method: 'GET',
