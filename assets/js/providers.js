@@ -17,22 +17,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 2. OBTENER DATOS DE LA API
     // ==========================================
+    // ==========================================
+    // 2. OBTENER DATOS DE LA API (Con Seguridad)
+    // ==========================================
     const cargarProveedores = async () => {
         try {
-            // Usa tu URL configurada o la de Render directamente
             const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
             
-            const response = await fetch(`${API_URL}/proveedores`);
+            // Obtenemos el token de sesión (Ajusta el nombre 'auth_token' si en tu sistema lo guardas diferente)
+            const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+
+            const response = await fetch(`${API_URL}/proveedores`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json', // Obliga a Laravel a no devolver HTML
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // La llave para pasar el middleware auth:sanctum
+                }
+            });
+
             const data = await response.json();
 
             if (data.status) {
                 renderizarTabla(data.data);
             } else {
-                mostrarError('No se pudo cargar la lista.');
+                mostrarError(data.message || 'No se pudo cargar la lista.');
             }
         } catch (error) {
             console.error('Error al obtener proveedores:', error);
-            mostrarError('Error de conexión con el servidor.');
+            mostrarError('Error de conexión. Verifica que tengas sesión iniciada.');
         }
     };
 
