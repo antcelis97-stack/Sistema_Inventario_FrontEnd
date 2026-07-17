@@ -83,11 +83,73 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #ef4444;">${mensaje}</td></tr>`;
     };
 
-    // Al darle clic al botón nuevo (Solo lo verán los admins)
+    // ==========================================
+    // 4. LÓGICA DEL MODAL (Crear Proveedor)
+    // ==========================================
+    const modalProveedor = document.getElementById('modal-proveedor');
+    const formProveedor = document.getElementById('form-proveedor');
+    const btnCancelarProv = document.getElementById('btn-cancelar-prov');
+    const btnGuardarProv = document.getElementById('btn-guardar-prov');
+
+    // Abrir el modal al hacer clic en "+ Nuevo Proveedor"
     btnNuevo.addEventListener('click', () => {
-        // Por ahora lo rediriges a tu modal o página de creación si la tienes separada.
-        // O puedes mandar un alert de "En desarrollo" si apenas lo vas a programar.
-        alert('Abrir modal de nuevo proveedor (Función en desarrollo)');
+        formProveedor.reset(); // Limpiar campos viejos
+        modalProveedor.style.display = 'flex';
+    });
+
+    // Cerrar el modal al hacer clic en "Cancelar"
+    btnCancelarProv.addEventListener('click', () => {
+        modalProveedor.style.display = 'none';
+    });
+
+    // Enviar el formulario a la API
+    formProveedor.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evitar que la página se recargue
+
+        // Estado de carga
+        const textoOriginal = btnGuardarProv.textContent;
+        btnGuardarProv.textContent = 'Guardando...';
+        btnGuardarProv.disabled = true;
+
+        // Construimos el objeto tal y como lo espera el ProveedorController
+        const datosNuevoProveedor = {
+            nombre_empresa: document.getElementById('prov-nombre').value,
+            contacto: document.getElementById('prov-contacto').value,
+            telefono: document.getElementById('prov-telefono').value,
+            email: document.getElementById('prov-correo').value
+        };
+
+        try {
+            const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
+            const token = localStorage.getItem('honda_token');
+
+            const response = await fetch(`${API_URL}/proveedores`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Llave maestra
+                },
+                body: JSON.stringify(datosNuevoProveedor)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status) {
+                // Éxito: Cerramos el modal y recargamos la tabla
+                modalProveedor.style.display = 'none';
+                cargarProveedores(); // Tu función existente que refresca la lista visualmente
+            } else {
+                alert('Error al guardar: ' + (data.message || 'Verifica los datos'));
+            }
+        } catch (error) {
+            console.error('Error enviando el proveedor:', error);
+            alert('Fallo de conexión. Verifica tu internet.');
+        } finally {
+            // Regresar el botón a la normalidad
+            btnGuardarProv.textContent = textoOriginal;
+            btnGuardarProv.disabled = false;
+        }
     });
 
     // Ejecutamos la carga inicial
