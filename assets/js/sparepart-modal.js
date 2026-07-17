@@ -323,7 +323,7 @@ window.loadProviders = async function(selectedProviderId = null) {
         if (response.ok && json.status) {
             provSelect.innerHTML = '<option value="">Selecciona un proveedor...</option>';
             json.data.forEach(prov => {
-                provSelect.innerHTML += `<option value="${prov.id}" ${(selectedProviderId == prov.id) ? 'selected' : ''}>${prov.nombre_empresa}</option>`;
+                provSelect.innerHTML += `<option value="${prov.id}" ${(selectedProviderId == prov.id) ? 'selected' : ''}>${prov.name}</option>`;
             });
             if (typeof initCustomSelects === 'function') initCustomSelects();
         }

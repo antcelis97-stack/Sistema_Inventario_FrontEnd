@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - Sistema de Inventario</title>
+    <!-- Asumiendo que usas tu propia hoja de estilos, aquí hay estilos base para que se vea bien de inmediato -->
+    <style>
+        body {
+            background-color: #0b1120; /* Tono oscuro tipo Honda Avante */
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1e293b;
+        }
+        .header-container h1 { margin: 0; font-size: 1.5rem; }
+        .header-container p { color: #94a3b8; margin: 4px 0 0 0; font-size: 0.875rem; }
+        
+        .table-wrapper {
+            background-color: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background-color: #0f172a; padding: 12px 16px; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
+        td { padding: 12px 16px; border-top: 1px solid #334155; font-size: 0.875rem; }
+        
+        .badge-empty { color: #64748b; font-style: italic; }
+        .back-link { color: #3b82f6; text-decoration: none; margin-right: 16px; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+        
+        /* Botón rojo al estilo Honda */
+        .btn-primary {
+            background-color: #dc2626; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;
+            display: none; /* Oculto por defecto por seguridad */
+        }
+        .btn-primary:hover { background-color: #b91c1c; }
+    </style>
+</head>
+<body>
+
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <!-- Encabezado -->
+        <div class="header-container">
+            <div>
+                <h1>Directorio de Proveedores</h1>
+                <p>Lista de contactos y empresas suministradoras.</p>
+            </div>
+            <div>
+                <a href="catalog.html" class="back-link">← Volver al Catálogo</a>
+                <!-- Este botón solo se mostrará si el usuario NO es operador -->
+                <button id="btn-nuevo-proveedor" class="btn-primary">+ Nuevo Proveedor</button>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-wrapper">
+            <table id="tabla-proveedores">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Contacto</th>
+                        <th>Teléfono</th>
+                        <th>Correo Electrónico</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-proveedores-body">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8;">Cargando proveedores...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Si tienes config.js, lo cargamos primero -->
+    <script src="assets/js/config.js"></script> 
+    <!-- Archivo lógico de la vista -->
+    <script src="assets/js/providers.js"></script>
+</body>
+</html>
