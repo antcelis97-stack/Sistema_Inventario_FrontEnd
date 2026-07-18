@@ -271,7 +271,7 @@ window.submitProductForm = async function(e) {
 
         // Imágenes
         const imgs = ['crud-image-1', 'crud-image-2', 'crud-image-3', 'crud-image-4'];
-        const compressionOptions = { maxSizeMB: 0.5, maxWidthOrHeight: 800, useWebWorker: true, mimeType: 'image/webp', initialQuality: 0.8 };
+        const compressionOptions = { maxSizeMB: 0.5, maxWidthOrHeight: 800, useWebWorker: true, fileType: 'image/webp', initialQuality: 0.8 };
         
         for (let i = 0; i < imgs.length; i++) {
             const file = document.getElementById(imgs[i])?.files[0];
@@ -292,12 +292,21 @@ window.submitProductForm = async function(e) {
 
         const data = await response.json();
         if (response.ok && data.status) {
-            alert(data.message);
             closeCrudModal(); 
-            if (typeof fetchCatalog === 'function') fetchCatalog(); 
-            if (typeof fetchInventory === 'function') fetchInventory(); 
+            
+            Swal.fire({
+                title: '¡Guardado!',
+                text: data.message || 'Refacción procesada correctamente.',
+                icon: 'success',
+                background: '#0f172a',
+                color: '#f8fafc',
+                confirmButtonColor: '#2563eb'
+            }).then(() => {
+                // Forzar la recarga total para limpiar la caché de las imágenes
+                window.location.reload(true); 
+            });
         } else {
-            alert(data.message || 'Error al guardar.');
+            Swal.fire('Error', data.message || 'Error al guardar.', 'error');
         }
 
     } catch (error) {
