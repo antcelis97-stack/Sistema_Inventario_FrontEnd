@@ -168,13 +168,15 @@ function openProductModal(identifier) {
         }
 
         modalImages = [product.images || null, product.img_2 || null, product.img_3 || null, product.img_4 || null];
-        
+        //El ciclo debe iterar 3 veces pero mapear los índices 1, 2 y 3 (las miniaturas secundarias)
         for(let i = 0; i < 3; i++) {
+            const dbIndex = i + 1; // i=0 lee modalImages[1] (img_2), i=1 lee modalImages[2] (img_3)...
             const thumbImg = document.getElementById(`thumb-img-${i}`);
             const thumbIcon = document.getElementById(`thumb-icon-${i}`);
+            
             if (thumbImg && thumbIcon) {
-                if (modalImages[i]) {
-                    thumbImg.src = modalImages[i];
+                if (modalImages[dbIndex]) {
+                    thumbImg.src = modalImages[dbIndex];
                     thumbImg.classList.remove('hidden');
                     thumbIcon.classList.add('hidden');
                 } else {
@@ -209,10 +211,16 @@ function setMainImage(index) {
         }
     }
 
+    // CORRECCIÓN: Ajustamos a la longitud total del array (4 elementos)
     document.querySelectorAll('.thumb-item').forEach((el, i) => {
         el.classList.remove('border-red-500', 'border-transparent');
-        if(i === index && modalImages[i]) el.classList.add('border-red-500');
-        else el.classList.add('border-transparent');
+        // El contenedor i=0 corresponde a la miniatura visual 0 (que ahora cargará el índice 1, etc.)
+        // Para simplificar la validación del borde con el nuevo mapeo:
+        if((i === 0 && index === 1) || (i === 1 && index === 2) || (i === 2 && index === 3)) {
+            el.classList.add('border-red-500');
+        } else {
+            el.classList.add('border-transparent');
+        }
     });
 }
 
@@ -221,15 +229,27 @@ function iniciarCarrusel() {
     if (modalImages.filter(Boolean).length > 1) {
         carouselInterval = setInterval(() => {
             let nextIndex = currentImageIndex + 1;
-            if(nextIndex > 2 || !modalImages[nextIndex]) nextIndex = 0;
+            if(nextIndex > 3 || !modalImages[nextIndex]) nextIndex = 0; // CORRECCIÓN: límite sube a 3
             setMainImage(nextIndex);
         }, 3000);
     }
 }
 
+function nextImage() { 
+    detenerCarrusel(); 
+    let nextIndex = currentImageIndex + 1; 
+    if (nextIndex > 3 || !modalImages[nextIndex]) nextIndex = 0; // CORRECCIÓN: límite sube a 3
+    setMainImage(nextIndex); 
+}
+
+function prevImage() { 
+    detenerCarrusel(); 
+    let prevIndex = currentImageIndex - 1; 
+    if (prevIndex < 0) prevIndex = Math.min(3, modalImages.filter(Boolean).length - 1); // CORRECCIÓN: límite sube a 3
+    setMainImage(prevIndex); 
+}
+
 function detenerCarrusel() { clearInterval(carouselInterval); }
-function nextImage() { detenerCarrusel(); let nextIndex = currentImageIndex + 1; if (nextIndex > 2 || !modalImages[nextIndex]) nextIndex = 0; setMainImage(nextIndex); }
-function prevImage() { detenerCarrusel(); let prevIndex = currentImageIndex - 1; if (prevIndex < 0) prevIndex = Math.min(2, modalImages.filter(Boolean).length - 1); setMainImage(prevIndex); }
 function closeProductModal() { detenerCarrusel(); animateModal('productModal', 'modalContent', false); }
 
 function animateModal(modalId, contentId, show) {
