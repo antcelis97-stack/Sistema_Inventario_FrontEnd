@@ -78,11 +78,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. Asignar el enlace del manual según el rol
     if (manualLink) {
         if (userRole === 'Administrador') {
-            manualLink.href = '../assets/manuals/manual_admin.pdf';
+            manualLink.href = '../assets/manuals/manual.pdf';
         } else if (userRole === 'Supervisor') {
-            manualLink.href = '../assets/manuals/manual_supervisor.pdf';
+            manualLink.href = '../assets/manuals/manual.pdf';
         } else {
-            manualLink.href = '../assets/manuals/manual_operador.pdf';
+            manualLink.href = '../assets/manuals/manual.pdf';
         }
     }
 
