@@ -130,11 +130,12 @@
                         </div>
                     </div>
 
-                    <div class="mt-auto">
-                        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                            <i class="fas fa-random text-gray-500"></i> Sustitutos Compatibles
-                        </h3>
-                        <div id="modal-substitutes" class="space-y-2"></div>
+                    <div class="mt-auto border-t border-gray-800 pt-4">
+                        <button id="btn-toggle-substitutes" class="w-full text-left text-sm font-bold text-white mb-3 flex items-center justify-between group hover:text-red-400 transition-colors focus:outline-none">
+                            <span class="flex items-center gap-2"><i class="fas fa-random text-gray-500"></i> Sustitutos Compatibles</span>
+                            <i id="substitutes-chevron" class="fas fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div id="modal-substitutes" class="space-y-2 hidden transition-all duration-300"></div>
                     </div>
                 </div>
 
