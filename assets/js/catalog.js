@@ -155,6 +155,51 @@ function openProductModal(identifier) {
         stockElement.className = (product.current_stock > 0) ? 'text-sm font-bold text-green-400' : 'text-sm font-bold text-red-500';
         document.getElementById('modal-desc').textContent = product.description || 'Importado del POS';
 
+        // ==========================================
+        // LÓGICA DE SUSTITUTOS (ACORDEÓN)
+        // ==========================================
+        const subsContainer = document.getElementById('modal-substitutes');
+        const toggleBtn = document.getElementById('btn-toggle-substitutes');
+        const chevron = document.getElementById('substitutes-chevron');
+
+        // 1. Limpiar el contenedor y resetear el estado oculto cada que se abre un producto
+        subsContainer.innerHTML = '';
+        subsContainer.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+        
+        // 2. Extraer los sustitutos (Soporta 'substitutes' o 'sustitutos' dependiendo de tu API)
+        const substitutes = product.substitutes || product.sustitutos || [];
+        
+        if (substitutes.length > 0) {
+            let htmlSubs = '<ul class="flex flex-col gap-2 mt-2">';
+            substitutes.forEach(sub => {
+                const stockColor = sub.current_stock > 0 ? 'text-green-400' : 'text-red-500';
+                htmlSubs += `
+                    <li class="bg-slate-950 p-3 rounded-lg border border-gray-800 flex justify-between items-center hover:border-gray-700 transition-colors">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-gray-200">${sub.name}</span>
+                            <span class="text-[10px] text-gray-500 font-mono tracking-wider">SKU: ${sub.sku}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] uppercase tracking-widest text-gray-500 block">Stock</span>
+                            <span class="text-xs font-black ${stockColor}">${sub.current_stock || 0}</span>
+                        </div>
+                    </li>
+                `;
+            });
+            htmlSubs += '</ul>';
+            subsContainer.innerHTML = htmlSubs;
+        } else {
+            subsContainer.innerHTML = '<p class="text-xs text-gray-500 bg-slate-950 p-3 rounded-lg border border-gray-800 text-center font-medium">No hay sustitutos compatibles registrados para esta pieza.</p>';
+        }
+
+        // 3. Asignar el evento de clic al botón para mostrar/ocultar (Toggle)
+        toggleBtn.onclick = () => {
+            subsContainer.classList.toggle('hidden');
+            if (chevron) chevron.classList.toggle('rotate-180');
+        };
+        // ==========================================
+
        const userRole = localStorage.getItem('user_role') || 'Operador';
         const btnEdit = document.getElementById('btn-edit-modal');
         if (btnEdit) {
