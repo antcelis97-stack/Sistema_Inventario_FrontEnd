@@ -141,13 +141,20 @@ window.logout = function() {
 };
 
 // Función de Notificaciones de Movimientos Pendientes
+// Función de Notificaciones de Movimientos Pendientes
 window.checkPendingApprovals = async function() {
     const userRole = localStorage.getItem('user_role');
-    if (userRole !== 'Administrador' && userRole !== 'Supervisor') return;
-
     const notifContainer = document.getElementById('navbar-notifications');
+
+    // Novedad: Si el usuario es Operador, forzamos a que se oculte la campana antes del return
+    if (userRole !== 'Administrador' && userRole !== 'Supervisor') {
+        if (notifContainer) notifContainer.classList.add('hidden');
+        return;
+    }
+
     const badge = document.getElementById('notification-badge');
     
+    // Si pasa la validación (es Admin/Supervisor), mostramos la campana
     if (notifContainer) notifContainer.classList.remove('hidden');
 
     try {
