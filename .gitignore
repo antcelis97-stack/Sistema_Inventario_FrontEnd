@@ -1,0 +1,19 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración de editores de código (VS Code, etc.)
+.vscode/
+.idea/
+
+# Dependencias (por si a futuro usas alguna herramienta de Node)
+node_modules/
+
+# Archivos de prueba masiva
+assets/pruebaimport.csv
+
+# IGNORAR carpeta de imágenes generales (refacciones temporales)
+assets/img/*
+
+# EXCEPCIÓN: Conservar la carpeta de imágenes de la interfaz del sistema
+!assets/img/sistema/
