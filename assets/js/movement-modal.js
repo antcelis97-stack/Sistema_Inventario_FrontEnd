@@ -90,6 +90,19 @@ window.initGlobalModalEvents = function() {
     if (form) {
         form.addEventListener('submit', submitGlobalMovement);
     }
+
+    // --- FIX: ESCUCHADORES DE EVENTOS PARA LA CÁMARA ---
+    const reasonSelect = document.getElementById('g-mov-reason');
+    if (reasonSelect) {
+        reasonSelect.addEventListener('change', checkPhotoRequirement);
+    }
+
+    // Respaldo por si el Custom Select sobreescribe el evento de clic nativo
+    document.addEventListener('click', function(e) {
+        if (e.target.parentNode && e.target.parentNode.className.includes('select-items')) {
+            setTimeout(checkPhotoRequirement, 50); 
+        }
+    });
 }
 
 window.openGlobalMovementModal = function(part = null) {
@@ -122,12 +135,11 @@ window.closeGlobalMovementModal = function() {
 };
 
 // ==========================================
-// NUEVA FUNCIÓN: ACTUALIZACIÓN DINÁMICA DE CLASIFICACIÓN
+// FIX: ACTUALIZACIÓN DINÁMICA SIN APILAMIENTO VISUAL
 // ==========================================
 window.updateGlobalMovementForm = function() {
     const type = document.getElementById('g-mov-type').value;
     const reasonSelect = document.getElementById('g-mov-reason');
-    const photoContainer = document.getElementById('g-mov-photo-container');
 
     // 1. Definimos tus clasificaciones exactas
     const optionsIN = [
@@ -156,13 +168,40 @@ window.updateGlobalMovementForm = function() {
         reasonSelect.appendChild(newOption);
     });
 
-    // 4. Forzamos a tu sistema de diseño a redibujar el menú desplegable
+    // 4. LIMPIEZA DE INTERFAZ (EL FIX DEL BUG)
+    // Borramos la basura visual (divs) que generó el custom select anterior 
+    // antes de crear uno nuevo.
+    const allSelects = document.querySelectorAll('select');
+    allSelects.forEach(select => {
+        const parent = select.parentNode;
+        Array.from(parent.children).forEach(child => {
+            if (child.tagName.toLowerCase() === 'div' && (child.className.includes('select-selected') || child.className.includes('select-items'))) {
+                child.remove();
+            }
+        });
+    });
+
+    // 5. Forzamos a tu sistema de diseño a redibujar un menú limpio
     if (typeof initCustomSelects === 'function') {
         initCustomSelects();
     }
 
-    // 5. Control de la evidencia fotográfica (Ocultar/Mostrar cámara)
-    const currentReason = reasonSelect.value;
+    // 6. Validamos la lógica de la cámara
+    checkPhotoRequirement();
+};
+
+// ==========================================
+// NUEVO HELPER: LÓGICA AISLADA DE LA CÁMARA
+// ==========================================
+window.checkPhotoRequirement = function() {
+    const reasonSelect = document.getElementById('g-mov-reason');
+    const photoContainer = document.getElementById('g-mov-photo-container');
+    
+    if(!reasonSelect || !photoContainer) return;
+
+    const currentReason = reasonSelect.value || '';
+    
+    // Si la opción seleccionada contiene 'Daño' o 'Devolución', mostramos los inputs
     if (currentReason.includes('Daño') || currentReason.includes('Devolución a proveedor')) {
         photoContainer.classList.remove('hidden');
     } else {
