@@ -2,22 +2,78 @@
 let currentReportData = [];
 const currencyFormatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
 
+// ==========================================
+// HELPER: Validador de Permisos Seguro
+// ==========================================
+function canAccessReport(permId) {
+    // Si la función global existe, la usamos
+    if (typeof hasPermission === 'function') return hasPermission(permId);
+    
+    // Si no, verificamos manualmente desde el Storage
+    const role = localStorage.getItem('user_role');
+    if (role === 'Administrador' || role === 'Supervisor') return true;
+    try {
+        const perms = JSON.parse(localStorage.getItem('user_permissions')) || [];
+        return perms.includes(permId);
+    } catch(e) { 
+        return false; 
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    initCustomSelects();
+    
+    const typeSelect = document.getElementById('report-type');
+    let hasAnyReportPerm = false;
+
+    // 1. FILTRAMOS LAS OPCIONES ANTES DEL DISEÑO VISUAL
+    if (typeSelect) {
+        // Mapeamos los valores del <select> a los IDs de tu matriz de permisos
+        const permMap = {
+            'all': 'reports_all',
+            'in': 'reports_in',
+            'out': 'reports_out',
+            'adjustments': 'reports_adjustments',
+            'returns': 'reports_returns'
+        };
+
+        // Recorremos las opciones y eliminamos las que no tienen permiso
+        Array.from(typeSelect.options).forEach(opt => {
+            const requiredPerm = permMap[opt.value];
+            if (requiredPerm && !canAccessReport(requiredPerm)) {
+                opt.remove(); // Quitamos la opción del HTML
+            } else {
+                hasAnyReportPerm = true; // Tiene al menos 1 permiso
+            }
+        });
+
+        // Seleccionamos por defecto la primera opción disponible 
+        if (typeSelect.options.length > 0) {
+            typeSelect.selectedIndex = 0;
+        }
+    }
+
+    // 2. AHORA SÍ inicializamos el estilo del menú desplegable
+    if (typeof initCustomSelects === 'function') initCustomSelects();
     
     const userRole = localStorage.getItem('user_role') || 'Operador';
+
+    // 3. BLOQUEO VISUAL: Ocultar métricas financieras (Solo Admins/Supervisores)
     if (userRole === 'Operador') {
-        // 1. BLOQUEO VISUAL: Ocultar métricas financieras
         const financialHeader = document.getElementById('financial-header');
         const financialCards = document.getElementById('financial-cards-wrapper');
         if (financialHeader) financialHeader.style.display = 'none';
         if (financialCards) financialCards.style.display = 'none';
+    } else {
+        fetchFinancialDashboard();
+    }
 
-        // 2. BLOQUEO VISUAL: Deshabilitar el formulario y los botones
-        const btnSearch = document.getElementById('btn-search');
-        const btnExport = document.getElementById('btn-export');
-        const formInputs = document.querySelectorAll('#report-form input, #report-form select');
+    // 4. BLOQUEO LÓGICO DEL BOTÓN BUSCAR
+    const btnSearch = document.getElementById('btn-search');
+    const btnExport = document.getElementById('btn-export');
+    const formInputs = document.querySelectorAll('#report-form input, #report-form select');
 
+    // Solo bloqueamos la barra si de verdad NO tiene ningún permiso de reporte
+    if (!hasAnyReportPerm) {
         formInputs.forEach(input => {
             input.disabled = true;
             input.classList.add('opacity-50', 'cursor-not-allowed');
@@ -31,11 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSearch.classList.replace('text-white', 'text-gray-500');
             btnSearch.classList.remove('shadow-blue-500/20');
         }
-        
         if (btnExport) btnExport.disabled = true;
-        
-    } else {
-        fetchFinancialDashboard();
     }
 
     const today = new Date();
@@ -46,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const reportForm = document.getElementById('report-form');
     if (reportForm) reportForm.addEventListener('submit', handleReportGeneration);
 
-    const btnExport = document.getElementById('btn-export');
     if (btnExport) btnExport.addEventListener('click', exportToExcel);
 });
 
@@ -78,10 +129,20 @@ function renderFinancialMetrics(financials) {
 async function handleReportGeneration(e) {
     e.preventDefault(); 
     
-    // 3. BLOQUEO LÓGICO: Validar permisos antes de la ejecución
-    const userRole = localStorage.getItem('user_role') || 'Operador';
-    if (userRole === 'Operador') {
-        showAppAlert("Acceso Denegado", "Tu rol no tiene permisos para realizar búsquedas de reportes.", "error");
+    // 5. VALIDACIÓN DE PERMISO ESPECÍFICO EN TIEMPO REAL
+    const selectedType = document.getElementById('report-type').value;
+    const permMap = {
+        'all': 'reports_all',
+        'in': 'reports_in',
+        'out': 'reports_out',
+        'adjustments': 'reports_adjustments',
+        'returns': 'reports_returns'
+    };
+    
+    const requiredPerm = permMap[selectedType];
+
+    if (requiredPerm && !canAccessReport(requiredPerm)) {
+        showAppAlert("Acceso Denegado", "Tu rol no tiene permisos para generar este reporte específico.", "error");
         return;
     }
 
@@ -92,7 +153,7 @@ async function handleReportGeneration(e) {
     const payload = {
         start_date: document.getElementById('date-start').value,
         end_date: document.getElementById('date-end').value,
-        type: document.getElementById('report-type').value
+        type: selectedType
     };
 
     if (!payload.start_date || !payload.end_date) {
@@ -149,7 +210,7 @@ function renderResults(movements) {
         }
 
         const photoUrl = mov.photo_1_url || mov.photo_1 || mov.evidence_photo;
-        if (photoUrl && hasPermission('view_evidence')) {
+        if (photoUrl && (typeof hasPermission === 'function' ? hasPermission('view_evidence') : true)) {
             extraBadges += `<br><button onclick="openPhotoModal('${photoUrl}')" class="text-blue-400 hover:text-white mt-1.5 flex items-center gap-1 text-[10px] bg-blue-900/30 border border-blue-800/50 hover:bg-blue-600 px-2 py-1 rounded w-max transition-all shadow-sm">
                                 <i class="fas fa-camera"></i> Ver Evidencia
                             </button>`;
@@ -175,14 +236,11 @@ function renderResults(movements) {
 }
 
 function exportToExcel() {
-    // 4. BLOQUEO LÓGICO: Validar permisos antes de la exportación
-    const userRole = localStorage.getItem('user_role') || 'Operador';
-    if (userRole === 'Operador') {
-        showAppAlert("Acceso Denegado", "Tu rol no tiene permisos para exportar datos.", "error");
-        return;
-    }
-
     if (currentReportData.length === 0) return;
+    
+    // El bloqueo estricto se removió aquí: Si el usuario llegó a este punto
+    // significa que ya superó la validación del "handleReportGeneration".
+    
     let csvContent = "Fecha,SKU,Refaccion,Tipo,Cantidad,Usuario,Motivo,Monto Reembolsado,Folio / NC\n";
     currentReportData.forEach(mov => {
         const date = new Date(mov.created_at).toLocaleString('es-MX').replace(',', '');
