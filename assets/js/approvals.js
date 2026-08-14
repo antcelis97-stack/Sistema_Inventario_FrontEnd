@@ -375,7 +375,7 @@ window.submitResolution = async function() {
         if (parseInt(qty) > parseInt(maxQty)) {
             showAppAlert("Atención", `No puedes ingresar más de las ${maxQty} piezas que enviaste.`, "warning"); return;
         }
-        amount = 0; folio = "";
+        amount = 0; folio = "N/A";
     } else {
         if (!amount || amount <= 0) {
             showAppAlert("Atención", "Debes ingresar el monto del reembolso.", "warning"); return;
