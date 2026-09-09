@@ -71,3 +71,73 @@ input:focus {
 ::-webkit-scrollbar-thumb:active {
     background-color: #b91c1c; /* red-700 (Un rojo más intenso al hacer presión) */
 }
+/* ==========================================================================
+   ANIMACIONES Y EFECTOS VANGUARDISTAS (UI/UX)
+   ========================================================================== */
+
+/* --- 1. Efecto "Fade & Slide-Up" (Transición de Módulos) --- */
+.fade-slide-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeSlideUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- 2. Efectos 3D Hover (Tarjetas y Botones) --- */
+.card-3d {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform; /* Optimización para la GPU */
+}
+
+.card-3d:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.4); /* Sombra adaptada a tema oscuro */
+}
+
+.btn-3d {
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-3d:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(220, 38, 38, 0.3); /* Resplandor rojo Honda */
+}
+
+.btn-3d:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* --- 3. Skeleton Loaders (Esqueletos de Carga para API) --- */
+.skeleton {
+    background: #1e293b; /* Color base oscuro (slate-800) */
+    /* Gradiente para simular el brillo de carga */
+    background-image: linear-gradient(
+        90deg, 
+        rgba(255,255,255, 0) 0px, 
+        rgba(255,255,255, 0.05) 50%, 
+        rgba(255,255,255, 0) 100%
+    );
+    background-size: 200px 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* Tamaños de las piezas del esqueleto */
+.skeleton-title { height: 24px; width: 60%; margin-bottom: 16px; }
+.skeleton-text { height: 16px; width: 100%; margin-bottom: 8px; }
+.skeleton-text.short { width: 80%; }
+.skeleton-img { height: 150px; width: 100%; margin-bottom: 16px; border-radius: 8px; }

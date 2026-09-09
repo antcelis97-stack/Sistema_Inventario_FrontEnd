@@ -2,176 +2,181 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('lista-proveedores-body');
     const btnNuevo = document.getElementById('btn-nuevo-proveedor');
     
-    // Variables del Modal[cite: 4]
     const modalProveedor = document.getElementById('modal-proveedor');
+    const contentProveedor = document.getElementById('modal-proveedor-content');
     const formProveedor = document.getElementById('form-proveedor');
     const btnCancelarProv = document.getElementById('btn-cancelar-prov');
+    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const btnGuardarProv = document.getElementById('btn-guardar-prov');
-    const tituloModal = document.querySelector('#modal-proveedor h2');
+    const tituloModal = document.getElementById('titulo-modal');
 
-    const userRole = localStorage.getItem('user_role') || 'operator'; 
-    let proveedoresMemoria = []; // Almacena la tabla temporalmente para facilitar la edición
-    let proveedorIdEdicion = null; // Bandera para saber si el usuario está creando o editando
+    const userRole = localStorage.getItem('user_role') || 'Operador'; 
+    let proveedoresMemoria = []; 
+    let proveedorIdEdicion = null; 
 
-    if (userRole !== 'operator') {
-        btnNuevo.style.display = 'inline-block';
+    if (userRole !== 'Operador') {
+        btnNuevo.classList.remove('hidden');
     }
 
-    // ==========================================
-    // OBTENER DATOS[cite: 4]
-    // ==========================================
-    const cargarProveedores = async () => {
-        try {
-            const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
-            const token = localStorage.getItem('honda_token');
+    // ANIMACIÓN DEL MODAL
+    const toggleModal = (show) => {
+        if (show) {
+            modalProveedor.classList.remove('hidden');
+            setTimeout(() => {
+                modalProveedor.classList.remove('opacity-0');
+                contentProveedor.classList.remove('scale-95');
+            }, 10);
+        } else {
+            modalProveedor.classList.add('opacity-0');
+            contentProveedor.classList.add('scale-95');
+            setTimeout(() => {
+                modalProveedor.classList.add('hidden');
+            }, 300);
+        }
+    };
 
-            const response = await fetch(`${API_URL}/proveedores`, {
+    const cargarProveedores = async () => {
+        // ESQUELETO MIENTRAS CARGA
+        tableBody.innerHTML = `
+            <tr>
+                <td class="p-4"><div class="skeleton skeleton-title mb-0"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+            </tr>
+        `.repeat(3);
+
+        try {
+            const token = localStorage.getItem('honda_token');
+            const response = await fetch(`${window.APP_API_URL}/proveedores`, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                }
+                headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
             });
 
             const data = await response.json();
-
-            if (data.status) {
-                proveedoresMemoria = data.data; // Guardamos los datos recibidos
+            if (response.ok && data.status) {
+                proveedoresMemoria = data.data; 
                 renderizarTabla(data.data);
             } else {
                 mostrarError(data.message || 'No se pudo cargar la lista.');
             }
         } catch (error) {
-            console.error('Error al obtener proveedores:', error);
-            mostrarError('Error de conexión. Verifica que tengas sesión iniciada.');
+            mostrarError('Error de conexión. Verifica que el servidor esté activo.');
         }
     };
 
-    // ==========================================
-    // RENDERIZAR TABLA[cite: 4]
-    // ==========================================
     const renderizarTabla = (proveedores) => {
         tableBody.innerHTML = ''; 
 
         if (proveedores.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">Aún no hay proveedores registrados.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-gray-500">Aún no hay proveedores registrados.</td></tr>`;
             return;
         }
 
         proveedores.forEach(prov => {
             const fila = document.createElement('tr');
+            fila.className = 'hover:bg-slate-800/30 transition-colors';
             
-            const contacto = prov.contact ? prov.contact : '<span class="badge-empty">N/A</span>';
-            const telefono = prov.phone ? prov.phone : '<span class="badge-empty">N/A</span>';
-            const email = prov.email ? prov.email : '<span class="badge-empty">N/A</span>';
+            const contacto = prov.contact ? prov.contact : '<span class="text-gray-600 italic text-xs">N/A</span>';
+            const telefono = prov.phone ? prov.phone : '<span class="text-gray-600 italic text-xs">N/A</span>';
+            const email = prov.email ? prov.email : '<span class="text-gray-600 italic text-xs">N/A</span>';
 
             let botonesAcciones = '';
-            if (userRole !== 'operator') {
+            if (userRole !== 'Operador') {
                 botonesAcciones = `
-                    <button onclick="editarProveedor(${prov.id})" style="background: transparent; border: none; color: #3b82f6; cursor: pointer; margin-right: 8px; font-size: 1.1rem;" title="Editar">✏️</button>
-                    <button onclick="confirmarEliminarProveedor(${prov.id}, '${prov.name}')" style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1.1rem;" title="Eliminar">🗑️</button>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="editarProveedor(${prov.id})" class="h-8 w-8 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 transition-colors" title="Editar"><i class="fas fa-pen"></i></button>
+                        <button onclick="confirmarEliminarProveedor(${prov.id}, '${prov.name}')" class="h-8 w-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors" title="Eliminar"><i class="fas fa-trash"></i></button>
+                    </div>
                 `;
             } else {
-                botonesAcciones = `<span style="color: #64748b; font-size: 0.8rem;">Solo lectura</span>`;
+                botonesAcciones = `<span class="text-xs text-gray-600">Solo lectura</span>`;
             }
 
             fila.innerHTML = `
-                <td style="font-weight: 500; color: #f8fafc;">${prov.name}</td>
-                <td>${contacto}</td>
-                <td>${telefono}</td>
-                <td>${email}</td>
-                <td>${botonesAcciones}</td>
+                <td class="p-4 font-bold text-white">${prov.name}</td>
+                <td class="p-4">${contacto}</td>
+                <td class="p-4">${telefono}</td>
+                <td class="p-4 text-blue-400">${email}</td>
+                <td class="p-4 text-right">${botonesAcciones}</td>
             `;
-            
             tableBody.appendChild(fila);
         });
     };
 
-    // ==========================================
-    // FUNCIÓN: ELIMINAR PROVEEDOR[cite: 4]
-    // ==========================================
     window.confirmarEliminarProveedor = async (id, nombre) => {
-        const confirmacion = confirm(`¿Estás seguro de que deseas eliminar al proveedor "${nombre}"?\n\nEsta acción no se puede deshacer.`);
-        if (confirmacion) {
-            try {
-                const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
-                const token = localStorage.getItem('honda_token');
+        const confirmacion = await Swal.fire({
+            title: '¿Eliminar Proveedor?',
+            text: `Borrarás a "${nombre}". Esta acción no se puede deshacer.`,
+            icon: 'warning',
+            showCancelButton: true,
+            background: '#0f172a', color: '#f8fafc', confirmButtonColor: '#dc2626', cancelButtonColor: '#334155',
+            confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar'
+        });
 
-                const response = await fetch(`${API_URL}/proveedores/${id}`, {
+        if (confirmacion.isConfirmed) {
+            try {
+                const token = localStorage.getItem('honda_token');
+                const response = await fetch(`${window.APP_API_URL}/proveedores/${id}`, {
                     method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();
-
                 if (response.ok && data.status) {
                     cargarProveedores();
+                    Swal.fire({title: 'Eliminado', icon: 'success', background: '#0f172a', color: '#f8fafc', showConfirmButton: false, timer: 1500});
                 } else {
-                    alert('Error al eliminar: ' + (data.message || 'El proveedor no pudo ser borrado.'));
+                    Swal.fire({title: 'Error', text: data.message, icon: 'error', background: '#0f172a', color: '#f8fafc'});
                 }
             } catch (error) {
-                console.error('Error eliminando el proveedor:', error);
-                alert('Fallo de conexión al intentar eliminar.');
+                Swal.fire({title: 'Fallo de red', text: 'Error de conexión', icon: 'error', background: '#0f172a', color: '#f8fafc'});
             }
         }
     };
 
-    // ==========================================
-    // FUNCIÓN: PREPARAR EDICIÓN[cite: 4]
-    // ==========================================
     window.editarProveedor = (id) => {
-        proveedorIdEdicion = id; // Guardamos el ID en nuestra bandera global
-        
-        // Buscamos los datos exactos del proveedor en nuestra memoria
+        proveedorIdEdicion = id; 
         const prov = proveedoresMemoria.find(p => p.id === id);
         
         if(prov) {
-            // Autocompletamos los campos del formulario
             document.getElementById('prov-nombre').value = prov.name || '';
             document.getElementById('prov-contacto').value = prov.contact || '';
             document.getElementById('prov-telefono').value = prov.phone || '';
             document.getElementById('prov-correo').value = prov.email || '';
             
-            // Adaptamos la interfaz del modal para que parezca de "Edición"
-            tituloModal.textContent = 'Editar Proveedor';
-            btnGuardarProv.textContent = 'Actualizar Proveedor';
+            tituloModal.innerHTML = '<i class="fas fa-edit text-amber-500 mr-2"></i> Editar Proveedor';
+            btnGuardarProv.textContent = 'Actualizar';
+            btnGuardarProv.classList.replace('bg-blue-600', 'bg-amber-600');
+            btnGuardarProv.classList.replace('hover:bg-blue-700', 'hover:bg-amber-700');
             
-            modalProveedor.style.display = 'flex';
+            toggleModal(true);
         }
     };
 
     const mostrarError = (mensaje) => {
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">${mensaje}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-red-500">${mensaje}</td></tr>`;
     };
 
-    // ==========================================
-    // LOGICA DEL MODAL: CREAR Y CANCELAR[cite: 4]
-    // ==========================================
     btnNuevo.addEventListener('click', () => {
-        proveedorIdEdicion = null; // Reiniciamos la bandera
+        proveedorIdEdicion = null; 
         formProveedor.reset(); 
-        tituloModal.textContent = 'Añadir Proveedor';
-        btnGuardarProv.textContent = 'Guardar Proveedor';
-        modalProveedor.style.display = 'flex';
+        tituloModal.innerHTML = '<i class="fas fa-truck text-blue-500 mr-2"></i> Añadir Proveedor';
+        btnGuardarProv.textContent = 'Guardar';
+        btnGuardarProv.classList.replace('bg-amber-600', 'bg-blue-600');
+        btnGuardarProv.classList.replace('hover:bg-amber-700', 'hover:bg-blue-700');
+        toggleModal(true);
     });
 
-    btnCancelarProv.addEventListener('click', () => {
-        modalProveedor.style.display = 'none';
-        proveedorIdEdicion = null; // Limpiamos bandera por seguridad
-    });
+    btnCancelarProv.addEventListener('click', () => toggleModal(false));
+    btnCerrarModal.addEventListener('click', () => toggleModal(false));
 
-    // ==========================================
-    // LOGICA DEL MODAL: ENVÍO (POST o PUT)[cite: 4]
-    // ==========================================
     formProveedor.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const textoOriginal = btnGuardarProv.textContent;
-        btnGuardarProv.textContent = 'Guardando...';
+        btnGuardarProv.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btnGuardarProv.disabled = true;
 
         const datosProveedor = {
@@ -182,40 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const API_URL = window.API_BASE_URL || 'https://sistema-inventario-ltei.onrender.com/api';
             const token = localStorage.getItem('honda_token');
-
-            // Magia dinámica: Si la bandera tiene un ID, usamos PUT. Si es nula, usamos POST.
             const metodo = proveedorIdEdicion ? 'PUT' : 'POST';
             const endpoint = proveedorIdEdicion ? `/proveedores/${proveedorIdEdicion}` : `/proveedores`;
 
-            const response = await fetch(`${API_URL}${endpoint}`, {
+            const response = await fetch(`${window.APP_API_URL}${endpoint}`, {
                 method: metodo,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(datosProveedor)
             });
 
             const data = await response.json();
 
             if (response.ok && data.status) {
-                modalProveedor.style.display = 'none';
-                cargarProveedores(); // Refrescamos tabla visualmente
+                toggleModal(false);
+                cargarProveedores(); 
             } else {
-                alert('Error: ' + (data.message || 'Verifica los datos ingresados'));
+                Swal.fire({title: 'Atención', text: data.message, icon: 'warning', background: '#0f172a', color: '#f8fafc'});
             }
         } catch (error) {
-            console.error('Error enviando el proveedor:', error);
-            alert('Fallo de conexión. Verifica tu internet.');
+            Swal.fire({title: 'Fallo de red', text: 'Verifica tu internet.', icon: 'error', background: '#0f172a', color: '#f8fafc'});
         } finally {
             btnGuardarProv.textContent = textoOriginal;
             btnGuardarProv.disabled = false;
         }
     });
 
-    // Arrancamos el proceso
     cargarProveedores();
 });

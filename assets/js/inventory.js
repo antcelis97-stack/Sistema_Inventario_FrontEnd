@@ -29,9 +29,21 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchInventory() {
     const token = localStorage.getItem('honda_token');
     const tbody = document.getElementById('inventory-body');
-
+    
     if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center p-8 text-gray-400"><i class="fas fa-spinner fa-spin mr-2 text-red-500"></i>Sincronizando existencias...</td></tr>';
+        // ELIMINAMOS EL SPINNER Y DEJAMOS SOLO EL ESQUELETO
+        tbody.innerHTML = `
+            <tr>
+                <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text short"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            </tr>
+        `.repeat(3);
     }
 
     try {
@@ -409,6 +421,16 @@ window.openStatusLogsModal = async function() {
 
     const tbody = document.getElementById('status-logs-body');
     const token = localStorage.getItem('honda_token');
+
+    // INYECTAMOS EL ESQUELETO MIENTRAS ESPERAMOS A LARAVEL
+    tbody.innerHTML = `
+        <tr>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+        </tr>
+    `.repeat(3);
 
     try {
         const response = await fetch(`${window.APP_API_URL}/movements/status-logs`, {

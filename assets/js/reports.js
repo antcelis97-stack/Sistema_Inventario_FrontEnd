@@ -129,7 +129,6 @@ function renderFinancialMetrics(financials) {
 async function handleReportGeneration(e) {
     e.preventDefault(); 
     
-    // 5. VALIDACIÓN DE PERMISO ESPECÍFICO EN TIEMPO REAL
     const selectedType = document.getElementById('report-type').value;
     const permMap = {
         'all': 'reports_all',
@@ -160,7 +159,25 @@ async function handleReportGeneration(e) {
         showAppAlert("Fechas inválidas", "Por favor selecciona un rango de fechas.", "warning"); return;
     }
 
-    btnSubmit.disabled = true; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btnExport.disabled = true;
+    btnSubmit.disabled = true; 
+    btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
+    btnExport.disabled = true;
+
+    // ABRIMOS EL CONTENEDOR E INYECTAMOS SKELETONS EN LA TABLA
+    const resultsContainer = document.getElementById('results-container');
+    const tbody = document.getElementById('report-results-body');
+    resultsContainer.classList.remove('hidden');
+    document.getElementById('results-count').innerText = `Cargando...`;
+    
+    tbody.innerHTML = `
+        <tr>
+            <td class="p-3"><div class="skeleton skeleton-text short"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-title mb-0"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text short"></div></td>
+            <td class="p-3"><div class="skeleton skeleton-text"></div></td>
+        </tr>
+    `.repeat(4);
 
     try {
         const token = localStorage.getItem('honda_token');
@@ -174,14 +191,17 @@ async function handleReportGeneration(e) {
         if (response.ok && data.status) {
             currentReportData = data.data; 
             renderResults(data.data);
-            document.getElementById('results-container').classList.remove('hidden');
             document.getElementById('results-count').innerText = `${data.count} registros`;
             if (data.count > 0) btnExport.disabled = false;
         } else {
             showAppAlert("Error", data.message || 'Error al generar el reporte.', "error");
+            tbody.innerHTML = '';
+            resultsContainer.classList.add('hidden');
         }
     } catch (error) {
         showAppAlert("Error de Red", "Fallo al conectar con el servidor.", "error");
+        tbody.innerHTML = '';
+        resultsContainer.classList.add('hidden');
     } finally {
         btnSubmit.disabled = false; btnSubmit.innerHTML = originalContent;
     }

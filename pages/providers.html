@@ -3,120 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proveedores - Sistema de Inventario</title>
-    <!-- Asumiendo que usas tu propia hoja de estilos, aquí hay estilos base para que se vea bien de inmediato -->
-    <style>
-        body {
-            background-color: #0b1120; /* Tono oscuro tipo Honda Avante */
-            color: #f8fafc;
-            font-family: system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #1e293b;
-        }
-        .header-container h1 { margin: 0; font-size: 1.5rem; }
-        .header-container p { color: #94a3b8; margin: 4px 0 0 0; font-size: 0.875rem; }
-        
-        .table-wrapper {
-            background-color: #1e293b;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background-color: #0f172a; padding: 12px 16px; color: #94a3b8; font-weight: 600; font-size: 0.875rem; }
-        td { padding: 12px 16px; border-top: 1px solid #334155; font-size: 0.875rem; }
-        
-        .badge-empty { color: #64748b; font-style: italic; }
-        .back-link { color: #3b82f6; text-decoration: none; margin-right: 16px; font-weight: 500; }
-        .back-link:hover { text-decoration: underline; }
-        
-        /* Botón rojo al estilo Honda */
-        .btn-primary {
-            background-color: #dc2626; color: white; border: none;
-            padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500;
-            display: none; /* Oculto por defecto por seguridad */
-        }
-        .btn-primary:hover { background-color: #b91c1c; }
-    </style>
+    <title>Proveedores | Honda Avante</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
-<body>
+<body class="bg-slate-950 text-white font-sans antialiased flex flex-col min-h-screen overflow-hidden">
 
-    <div style="max-width: 1000px; margin: 0 auto;">
-        <!-- Encabezado -->
-        <div class="header-container">
-            <div>
-                <h1>Directorio de Proveedores</h1>
-                <p>Lista de contactos y empresas suministradoras.</p>
-            </div>
-            <div>
-                <a href="catalog.html" class="back-link">← Volver al Catálogo</a>
-                <!-- Este botón solo se mostrará si el usuario NO es operador -->
-                <button id="btn-nuevo-proveedor" class="btn-primary">+ Nuevo Proveedor</button>
-            </div>
-        </div>
+    <div id="navbar-placeholder" class="h-16 w-full fixed top-0 left-0 z-50"></div>
 
-        <!-- Tabla -->
-        <div class="table-wrapper">
-            <table id="tabla-proveedores">
-                <thead>
-                    <tr>
-                        <th>Empresa</th>
-                        <th>Contacto</th>
-                        <th>Teléfono</th>
-                        <th>Correo Electrónico</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-proveedores-body">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: #94a3b8;">Cargando proveedores...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- MODAL NUEVO PROVEEDOR (Oculto por defecto) -->
-    <div id="modal-proveedor" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 50; backdrop-filter: blur(2px);">
-        <div style="background: #1e293b; padding: 24px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); border: 1px solid #334155;">
-            <h2 style="margin-top: 0; font-size: 1.25rem; border-bottom: 1px solid #334155; padding-bottom: 12px; color: #f8fafc;">Añadir Proveedor</h2>
+    <div class="flex flex-1 mt-16">
+        <div id="sidebar-placeholder" class="fixed top-16 left-0 w-44 h-[calc(100vh-4rem)] z-40"></div>
+
+        <!-- FADE SLIDE UP -->
+        <main class="ml-44 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar fade-slide-up">
             
-            <form id="form-proveedor">
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; margin-bottom: 4px; font-size: 0.875rem; color: #94a3b8;">Nombre de la Empresa *</label>
-                    <input type="text" id="prov-nombre" required placeholder="Ej. COMOTO HONDA" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-800 pb-6">
+                <div>
+                    <h2 class="text-3xl font-bold border-l-4 border-red-600 pl-4">Directorio de Proveedores</h2>
+                    <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Lista de contactos y empresas suministradoras.</p>
                 </div>
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; margin-bottom: 4px; font-size: 0.875rem; color: #94a3b8;">Nombre del Contacto</label>
-                    <input type="text" id="prov-contacto" placeholder="Opcional" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
+                <div class="flex gap-4 items-center">
+                    <a href="catalog.html" class="text-blue-500 hover:text-blue-400 font-bold text-sm transition-colors">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al Catálogo
+                    </a>
+                    <button id="btn-nuevo-proveedor" class="btn-3d hidden bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg flex items-center gap-2 text-sm whitespace-nowrap">
+                        <i class="fas fa-plus"></i> Nuevo Proveedor
+                    </button>
                 </div>
-                <div style="margin-bottom: 16px;">
-                    <label style="display: block; margin-bottom: 4px; font-size: 0.875rem; color: #94a3b8;">Teléfono</label>
-                    <input type="text" id="prov-telefono" placeholder="Opcional" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
+            </div>
+
+            <!-- CARD 3D PARA LA TABLA -->
+            <div class="card-3d bg-slate-900 border border-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="tabla-proveedores">
+                        <thead class="bg-slate-950 border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider font-bold">
+                            <tr>
+                                <th class="p-4">Empresa</th>
+                                <th class="p-4">Contacto</th>
+                                <th class="p-4">Teléfono</th>
+                                <th class="p-4">Correo Electrónico</th>
+                                <th class="p-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-proveedores-body" class="divide-y divide-gray-800 text-sm text-gray-300">
+                            <!-- ESQUELETOS INICIALES -->
+                            <tr>
+                                <td class="p-4"><div class="skeleton skeleton-title mb-0"></div></td>
+                                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                                <td class="p-4"><div class="skeleton skeleton-text short mb-0"></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 4px; font-size: 0.875rem; color: #94a3b8;">Correo Electrónico</label>
-                    <input type="email" id="prov-correo" placeholder="Opcional" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box;">
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL NUEVO/EDITAR PROVEEDOR -->
+    <div id="modal-proveedor" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center transition-opacity opacity-0">
+        <div id="modal-proveedor-content" class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-slate-950 rounded-t-2xl">
+                <h3 id="titulo-modal" class="text-xl font-bold text-white"><i class="fas fa-truck text-blue-500 mr-2"></i> Añadir Proveedor</h3>
+                <button id="btn-cerrar-modal" class="text-gray-500 hover:text-red-500 transition-colors"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <form id="form-proveedor" class="p-6 space-y-4" autocomplete="off">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre de la Empresa *</label>
+                    <input type="text" id="prov-nombre" required placeholder="Ej. COMOTO HONDA" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre del Contacto</label>
+                    <input type="text" id="prov-contacto" placeholder="Opcional" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Teléfono</label>
+                    <input type="text" id="prov-telefono" placeholder="Opcional" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
+                    <input type="email" id="prov-correo" placeholder="Opcional" class="w-full bg-slate-950 border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition">
                 </div>
                 
-                <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                    <button type="button" id="btn-cancelar-prov" style="background: transparent; border: 1px solid #64748b; color: #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s;">Cancelar</button>
-                    <button type="submit" id="btn-guardar-prov" style="background: #3b82f6; border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s;">Guardar Proveedor</button>
+                <div class="mt-8 flex gap-3 pt-2">
+                    <button type="button" id="btn-cancelar-prov" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-colors">Cancelar</button>
+                    <button type="submit" id="btn-guardar-prov" class="btn-3d flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-900/50">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Si tienes config.js, lo cargamos primero -->
     <script src="assets/js/config.js"></script> 
-    <!-- Archivo lógico de la vista -->
+    <script src="../assets/js/component-loader.js"></script>
     <script src="../assets/js/providers.js"></script>
 </body>
 </html>

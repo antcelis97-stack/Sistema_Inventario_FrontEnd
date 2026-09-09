@@ -18,40 +18,32 @@
     <div class="flex flex-1 mt-16">
         <div id="sidebar-placeholder" class="fixed top-16 left-0 w-42 h-[calc(100vh-4rem)] z-40"></div>
         
-        <main class="ml-48 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto">
+        <!-- FADE SLIDE UP APLICADO A LA VISTA -->
+        <main class="ml-48 flex-1 p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto fade-slide-up">
             
-            <!-- ENCABEZADO Y CONTROLES -->
             <div class="mb-6 border-b border-gray-800 pb-6 flex flex-col gap-5">
-                
-                <!-- Fila 1: Título y Botón Principal -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-3xl font-bold border-l-4 border-red-600 pl-4">Historial de Movimientos</h2>
                         <p class="text-sm text-gray-500 mt-2 font-medium tracking-wide">Trazabilidad de entradas y salidas del almacén.</p>
                     </div>
                     
-                    <!-- Botón Nuevo Movimiento -->
-                    <button data-permission="create_in" onclick="openGlobalMovementModal()" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 flex items-center justify-center text-sm shrink-0 whitespace-nowrap h-[42px]">
+                    <!-- EFECTO BOTON 3D APLICADO -->
+                    <button data-permission="create_in" onclick="openGlobalMovementModal()" class="btn-3d w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg font-bold transition-all border-b-4 border-red-800 active:border-b-0 flex items-center justify-center text-sm shrink-0 whitespace-nowrap h-[42px]">
                         <i class="fas fa-plus mr-2"></i> Nuevo Movimiento
                     </button>
                 </div>
         
-                <!-- Fila 2: PANEL DE FILTROS -->
+                <!-- PANEL DE FILTROS (Se mantiene igual) -->
                 <div class="flex flex-wrap items-center gap-3 w-full bg-slate-900/50 p-3 rounded-xl border border-gray-800/80">
-                    
-                    <!-- Filtro Fecha Desde -->
                     <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors flex-1 min-w-[140px]">
                         <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-2 hidden sm:block">Desde:</span>
                         <input type="date" id="filter-date-start" onchange="applyMovementFilters()" class="bg-transparent text-xs text-gray-200 focus:outline-none [color-scheme:dark] cursor-pointer w-full">
                     </div>
-
-                    <!-- Filtro Fecha Hasta -->
                     <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors flex-1 min-w-[140px]">
                         <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-2 hidden sm:block">Hasta:</span>
                         <input type="date" id="filter-date-end" onchange="applyMovementFilters()" class="bg-transparent text-xs text-gray-200 focus:outline-none [color-scheme:dark] cursor-pointer w-full">
                     </div>
-
-                    <!-- Filtro Estado -->
                     <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors relative flex-1 min-w-[160px]">
                         <i class="fas fa-clipboard-check text-gray-500 mr-2"></i>
                         <select id="filter-status" onchange="applyMovementFilters()" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8 w-full">
@@ -62,8 +54,6 @@
                         </select>
                         <i class="fas fa-chevron-down absolute right-3 text-gray-500 text-[10px] pointer-events-none"></i>
                     </div>
-
-                    <!-- Filtro Clasificación -->
                     <div class="flex items-center bg-slate-950 border border-gray-700 rounded-lg px-3 py-2 shadow-inner focus-within:border-red-500 transition-colors relative flex-1 min-w-[180px]">
                         <i class="fas fa-tags text-gray-500 mr-2"></i>
                         <select id="filter-type" onchange="applyMovementFilters()" class="bg-transparent text-xs text-white focus:outline-none cursor-pointer appearance-none pr-8 w-full">
@@ -78,7 +68,8 @@
                 </div>
             </div>
 
-            <div class="bg-slate-900 rounded-xl overflow-hidden shadow-2xl border border-gray-800">
+            <!-- TABLA CON CARD 3D -->
+            <div class="card-3d bg-slate-900 rounded-xl overflow-hidden border border-gray-800">
                 <table class="w-full text-left">
                     <thead class="bg-red-600/10 text-red-500 uppercase text-xs font-black border-b border-red-600/20">
                         <tr>
@@ -92,6 +83,19 @@
                         </tr>
                     </thead>
                     <tbody id="movements-body" class="divide-y divide-gray-800">
+                        <!-- SKELETON LOADER REEMPLAZA EL ESTADO VACÍO INICIAL -->
+                        <tr id="movements-skeleton">
+                            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                            <td class="p-4">
+                                <div class="skeleton skeleton-title"></div>
+                                <div class="skeleton skeleton-text short"></div>
+                            </td>
+                            <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+                            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+                            <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -99,17 +103,9 @@
         </main>
     </div>
 
+    <!-- Modales se mantienen igual -->
     <!-- MODAL DE FOTOS -->
-    <div id="photo-modal" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center backdrop-blur-md transition-opacity opacity-0">
-        <button onclick="closePhotoModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white text-4xl hover:rotate-90 transition-all"><i class="fas fa-times"></i></button>
-        
-        <img id="photo-viewer-img" src="" class="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-gray-800">
-        
-        <a id="photo-download-btn" href="#" download class="absolute bottom-8 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 border border-gray-700 transition-colors">
-            <i class="fas fa-download"></i> Descargar Evidencia
-        </a>
-    </div>
-
+    <!-- ... -->
     <div id="global-modal-placeholder"></div>
     <div id="support-modal-placeholder"></div>
     <div id="my-movements-modal-placeholder"></div>

@@ -16,6 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 async function fetchPendingApprovals() {
     const container = document.getElementById('approvals-container');
+    container.innerHTML = `
+    <div class="card-3d p-6 bg-slate-900 border border-gray-800 rounded-xl">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text short"></div>
+        <div class="mt-6 flex gap-3">
+            <div class="skeleton h-10 w-full rounded-lg"></div>
+            <div class="skeleton h-10 w-full rounded-lg"></div>
+        </div>
+    </div>
+`.repeat(3); // Inyectamos 3 esqueletos
+
     const token = localStorage.getItem('honda_token');
 
     try {
@@ -41,7 +53,19 @@ async function fetchPendingApprovals() {
 async function fetchRejectedApprovals() {
     const container = document.getElementById('approvals-container');
     const token = localStorage.getItem('honda_token');
-    container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4 text-red-600"></i><p>Cargando historial de rechazados...</p></div>`;
+    
+    // REEMPLAZAMOS EL SPINNER POR EL ESQUELETO
+    container.innerHTML = `
+        <div class="card-3d p-6 bg-slate-900 border border-gray-800 rounded-xl">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text short"></div>
+            <div class="mt-6 flex gap-3">
+                <div class="skeleton h-10 w-full rounded-lg"></div>
+                <div class="skeleton h-10 w-full rounded-lg"></div>
+            </div>
+        </div>
+    `.repeat(3);
 
     try {
         const response = await fetch(`${window.APP_API_URL}/movements/rejected`, {

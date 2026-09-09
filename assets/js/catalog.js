@@ -19,9 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchCatalog() {
     const token = localStorage.getItem('honda_token');
     const catalogContainer = document.getElementById('catalog-container');
-
+    
+    // CORRECCIÓN: Usamos catalogContainer y eliminamos el spinner
     if (catalogContainer) {
-        catalogContainer.innerHTML = '<p class="text-white text-center w-full"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando inventario...</p>';
+        catalogContainer.innerHTML = `
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                ${`
+                <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl">
+                    <div class="skeleton skeleton-img"></div>
+                    <div class="skeleton skeleton-title w-full"></div>
+                    <div class="skeleton skeleton-text short"></div>
+                </div>
+                `.repeat(5)}
+            </div>
+        `;
     }
 
     try {
@@ -38,10 +49,10 @@ async function fetchCatalog() {
             populateCategoryDropdown(allProducts);
             renderCatalog(allProducts);
         } else {
-            if (catalogContainer) catalogContainer.innerHTML = '<p class="text-red-500 text-center">Error al cargar refacciones.</p>';
+            if (catalogContainer) catalogContainer.innerHTML = '<div class="col-span-full p-12 text-center text-red-500 bg-slate-900 border border-gray-800 rounded-xl">Error al cargar refacciones.</div>';
         }
     } catch (error) {
-        if (catalogContainer) catalogContainer.innerHTML = '<p class="text-red-500 text-center">Error de conexión con el servidor.</p>';
+        if (catalogContainer) catalogContainer.innerHTML = '<div class="col-span-full p-12 text-center text-red-500 bg-slate-900 border border-gray-800 rounded-xl">Error de conexión con el servidor.</div>';
     }
 }
 

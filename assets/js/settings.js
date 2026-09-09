@@ -33,6 +33,17 @@ async function loadUsers() {
     const token = localStorage.getItem('honda_token');
     const tbody = document.getElementById('users-table-body');
     
+    // INYECTAMOS EL ESQUELETO VISUAL
+    tbody.innerHTML = `
+        <tr>
+            <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text short"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+        </tr>
+    `.repeat(4);
+    
     try {
         const response = await fetch(`${window.APP_API_URL}/users`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -42,11 +53,9 @@ async function loadUsers() {
         if (response.ok && json.status) {
             tbody.innerHTML = '';
             
-            // Atrapamos quién está viendo la pantalla
             const currentUserId = json.current_user_id;
 
             json.data.forEach(user => {
-                
                 const protectedIds = [1, 2, 5]; 
                 const isUntouchable = protectedIds.includes(user.id);
                 const isMe = (user.id === currentUserId);
@@ -66,18 +75,14 @@ async function loadUsers() {
                     ? `<span class="bg-gray-800 text-gray-500 px-2 py-0.5 rounded text-[9px] font-bold tracking-widest"><i class="fas fa-eye-slash mr-1"></i> OCULTO</span>` 
                     : user.email;
 
-                // 🛡️ LÓGICA DE RENDERIZADO DE BOTONES
                 let actionButtons = '';
                 const editBtn = `<button onclick="openEditUserModal(${user.id}, '${user.name}', '${user.email}')" class="h-8 w-8 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 transition-colors" title="Editar Datos"><i class="fas fa-pen"></i></button>`;
 
                 if (isUntouchable && !isMe) {
-                    // Es núcleo, pero NO eres tú: Bloqueo Total
                     actionButtons = `<span class="text-xs text-gray-600 font-mono italic flex items-center justify-end"><i class="fas fa-lock mr-2"></i> Núcleo del Sistema</span>`;
                 } else if (isUntouchable && isMe) {
-                    // Eres tú mismo (Núcleo): Solo puedes editar tus datos
                     actionButtons = `<div class="flex justify-end gap-2">${editBtn}</div>`;
                 } else {
-                    // Usuario mortal: Controles completos
                     const toggleIcon = user.activo ? 'fa-power-off text-red-400' : 'fa-check text-green-400';
                     const permsStr = user.permissions ? JSON.stringify(user.permissions).replace(/"/g, '&quot;') : '[]';
                     
@@ -97,12 +102,10 @@ async function loadUsers() {
                     `;
                 }
 
-                // (Busca este fragmento dentro de tu función loadUsers)
                 tbody.innerHTML += `
                     <tr class="border-b border-gray-800 transition ${rowClass}">
                         <td class="p-4 font-mono text-xs text-gray-500">USR-${String(user.id).padStart(3, '0')}</td>
                         <td class="p-4">
-                            <!-- AQUÍ DEVOLVEMOS LAS CLASES VISUALES AL BOTÓN -->
                             <button onclick="showUserDetails(${user.id}, '${user.name}', '${user.email}', '${user.role}', '${user.avatar_url || ''}')" class="font-bold text-white hover:text-blue-400 transition-colors cursor-pointer text-left">
                                 ${user.name} ${isUntouchable ? '<i class="fas fa-shield-alt text-blue-500 ml-1 text-xs" title="Sistema"></i>' : ''}
                             </button>
@@ -117,6 +120,7 @@ async function loadUsers() {
         }
     } catch (error) {
         console.error('Error al cargar usuarios:', error);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-red-500">Error de conexión al cargar usuarios.</td></tr>';
     }
 }
 

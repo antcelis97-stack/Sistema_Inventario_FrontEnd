@@ -14,24 +14,19 @@
 </head>
 <body class="bg-slate-950 text-white font-sans antialiased flex flex-col min-h-screen overflow-hidden">
 
-    <!-- Navbar Fijo -->
     <div id="navbar-placeholder" class="h-16 w-full fixed top-0 left-0 z-50"></div>
 
-    <!-- Contenedor Flex Principal -->
     <div class="flex flex-1 mt-16">
-        
-        <!-- Sidebar Fijo -->
         <div id="sidebar-placeholder" class="fixed top-16 left-0 w-44 h-[calc(100vh-4rem)] z-40"></div>
 
-        <!-- Contenido Principal Empujado -->
-        <main class="ml-44 flex-1 p-8 md:p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
+        <!-- FADE SLIDE UP APLICADO A LA VISTA -->
+        <main class="ml-44 flex-1 p-8 md:p-10 bg-slate-950 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar fade-slide-up">
             
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-800 pb-6">
                 <div>
                     <h2 class="text-3xl font-black tracking-tight flex items-center gap-3">
                         <i class="fas fa-th-large text-red-600"></i> Catálogo Interactivo
                     </h2>
-                    
                     <p class="text-gray-500 text-sm mt-1">Explora refacciones, visualiza detalles técnicos y consulta sustitutos.</p>
                 </div>
 
@@ -47,24 +42,53 @@
                         </select>
                     </div>
                     
-                    <button id="btn-admin-add" onclick="openCrudModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg shadow-red-600/20 flex items-center gap-2 text-sm whitespace-nowrap">
+                    <button id="btn-admin-add" onclick="openCrudModal()" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold transition-colors shadow-lg flex items-center gap-2 text-sm whitespace-nowrap">
                         <i class="fas fa-plus"></i> <span class="hidden sm:inline">Nueva Refacción</span>
                     </button>
                 </div>
             </div>
             <div style="text-align: right; margin-top: 8px;">
-                        <a href="providers.html" style="color: #3b82f6; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#3b82f6'">
-                            Ver Lista de Proveedores
-                        </a>
-                    </div>
+                <a href="providers.html" style="color: #3b82f6; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='#3b82f6'">
+                    Ver Lista de Proveedores
+                </a>
+            </div>
 
-            <!-- Contenedor dinámico de refacciones -->
-            <div id="catalog-container" class="space-y-10 pb-10"></div>
+            <!-- Contenedor dinámico de refacciones (SKELETON LOADER INICIAL) -->
+            <div id="catalog-container" class="space-y-10 pb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-title w-full"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                    <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-title w-full"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                    <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl hidden sm:block">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-title w-full"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                    <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl hidden md:block">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-title w-full"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                    <div class="card-3d p-4 bg-slate-900 border border-gray-800 rounded-xl hidden lg:block">
+                        <div class="skeleton skeleton-img"></div>
+                        <div class="skeleton skeleton-title w-full"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                    </div>
+                </div>
+            </div>
             
         </main>
     </div>
 
     <!-- MODAL DE VISUALIZACIÓN DE PRODUCTO -->
+    <!-- ... Todo el modal del producto se mantiene igual ... -->
     <div id="productModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
         <div class="bg-slate-900 border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col relative shadow-2xl mx-4 transform scale-95 transition-transform duration-300" id="modalContent">
             
@@ -110,7 +134,7 @@
                             <h2 id="modal-title" class="text-2xl font-black text-white mb-1 leading-tight">Nombre del Producto</h2>
                             <p id="modal-sku" class="text-sm text-gray-400 font-mono">SKU: ---</p>
                         </div>
-                        <button id="btn-edit-modal" class="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold shrink-0 hidden shadow-sm">
+                        <button id="btn-edit-modal" class="btn-3d bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-600 px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold shrink-0 hidden shadow-sm">
                             <i class="fas fa-edit"></i> Editar
                         </button>
                     </div>

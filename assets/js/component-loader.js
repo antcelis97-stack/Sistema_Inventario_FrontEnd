@@ -141,7 +141,6 @@ window.logout = function() {
 };
 
 // Función de Notificaciones de Movimientos Pendientes
-// Función de Notificaciones de Movimientos Pendientes
 window.checkPendingApprovals = async function() {
     const userRole = localStorage.getItem('user_role');
     const notifContainer = document.getElementById('navbar-notifications');
@@ -204,8 +203,29 @@ window.openMyMovementsModal = async function() {
     }, 10);
 
     const tbody = document.getElementById('my-movements-body');
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center p-8 text-gray-500"><i class="fas fa-spinner fa-spin mr-2 text-blue-500"></i> Recuperando historial...</td></tr>';
-
+    // Aplicamos el Skeleton Loader mientras esperamos al Backend
+    tbody.innerHTML = `
+        <tr>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+        </tr>
+        <tr>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text short"></div>
+            </td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text"></div></td>
+            <td class="p-4"><div class="skeleton skeleton-text short"></div></td>
+        </tr>
+    `;
     try {
         const token = localStorage.getItem('honda_token');
         const response = await fetch(`${window.APP_API_URL}/movements/my-movements`, { // http://
