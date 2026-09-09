@@ -34,7 +34,10 @@
                 <div id="kpi-catalog-card" onclick="showCatalogDetails()" class="card-3d bg-slate-900 border border-gray-800 p-6 rounded-xl flex justify-between items-center cursor-pointer group" title="Ver estructura del catálogo">
                     <div>
                         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1 group-hover:text-gray-300 transition-colors">Catálogo <i class="fas fa-hand-pointer ml-1 text-gray-600"></i></p>
-                        <h3 class="text-3xl font-black text-white" id="kpi-products">0</h3>
+                        <h3 class="text-3xl font-black text-white" id="kpi-products">
+                            <!-- Esqueleto en lugar del 0 -->
+                            <div class="skeleton h-9 w-20 rounded-md"></div>
+                        </h3>
                     </div>
                     <div class="h-12 w-12 bg-slate-800 rounded-lg flex items-center justify-center text-gray-400 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-cogs"></i></div>
                 </div>
@@ -42,7 +45,10 @@
                 <div id="kpi-financial-card" onclick="showFinancialDetails()" class="card-3d bg-slate-900 border border-blue-900/40 p-6 rounded-xl flex justify-between items-center cursor-pointer group" title="Ver distribución de capital">
                     <div>
                         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1 group-hover:text-blue-400 transition-colors">Inversión Almacén <i class="fas fa-hand-pointer ml-1 text-blue-500/50"></i></p>
-                        <h3 class="text-3xl font-black text-blue-400" id="kpi-value">$0.00</h3>
+                        <h3 class="text-3xl font-black text-blue-400" id="kpi-value">
+                            <!-- Esqueleto en lugar del $0.00 -->
+                            <div class="skeleton h-9 w-32 rounded-md"></div>
+                        </h3>
                     </div>
                     <div class="h-12 w-12 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-500 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-dollar-sign"></i></div>
                 </div>
@@ -50,7 +56,10 @@
                 <div id="kpi-alerts-card" onclick="showLowStockAlerts()" class="card-3d bg-slate-900 border border-red-900/50 p-6 rounded-xl flex justify-between items-center border-l-4 border-l-red-600 cursor-pointer group" title="Ver detalle de alertas">
                     <div>
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1 group-hover:text-red-400 transition-colors">Alertas Stock <i class="fas fa-hand-pointer ml-1 text-red-500/50"></i></p>
-                        <h3 class="text-3xl font-black text-red-500" id="kpi-alerts">0</h3>
+                        <h3 class="text-3xl font-black text-red-500" id="kpi-alerts">
+                            <!-- Esqueleto en lugar del 0 -->
+                            <div class="skeleton h-9 w-16 rounded-md"></div>
+                        </h3>
                     </div>
                     <div class="h-12 w-12 bg-red-500/10 rounded-lg flex items-center justify-center text-red-500 text-xl group-hover:scale-110 transition-transform"><i class="fas fa-exclamation-triangle"></i></div>
                 </div>
@@ -75,6 +84,38 @@
                     </div>
                     <div id="recent-activity-body" class="divide-y divide-gray-800 flex-1 overflow-y-auto max-h-80 custom-scrollbar">
                         <!-- Esqueleto para Actividad Reciente (Pega esto 3 o 4 veces) -->
+                        <div class="p-4 flex items-center gap-4">
+                            <!-- Círculo simulando el ícono -->
+                            <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                            <div class="w-full">
+                                <div class="skeleton skeleton-text short mb-2"></div>
+                                <div class="skeleton skeleton-text w-1/3 !mb-0"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center gap-4">
+                            <!-- Círculo simulando el ícono -->
+                            <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                            <div class="w-full">
+                                <div class="skeleton skeleton-text short mb-2"></div>
+                                <div class="skeleton skeleton-text w-1/3 !mb-0"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center gap-4">
+                            <!-- Círculo simulando el ícono -->
+                            <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                            <div class="w-full">
+                                <div class="skeleton skeleton-text short mb-2"></div>
+                                <div class="skeleton skeleton-text w-1/3 !mb-0"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center gap-4">
+                            <!-- Círculo simulando el ícono -->
+                            <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                            <div class="w-full">
+                                <div class="skeleton skeleton-text short mb-2"></div>
+                                <div class="skeleton skeleton-text w-1/3 !mb-0"></div>
+                            </div>
+                        </div>
                         <div class="p-4 flex items-center gap-4">
                             <!-- Círculo simulando el ícono -->
                             <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
