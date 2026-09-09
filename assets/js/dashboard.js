@@ -50,17 +50,38 @@ async function loadDashboardData() {
             method: 'GET', headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
         const result = await response.json();
+        
         if (response.ok && result.status) {
             const data = result.data;
             document.getElementById('kpi-products').innerText = data.kpis.total_products.toLocaleString('es-MX');
             document.getElementById('kpi-alerts').innerText = data.kpis.low_stock_alerts.toLocaleString('es-MX');
             document.getElementById('kpi-value').innerText = `$${parseFloat(data.kpis.total_value).toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
 
+            // --- MAGIA: Ocultar esqueletos y mostrar las gráficas ---
+            const skelFlow = document.getElementById('skeleton-flow');
+            const wrapFlow = document.getElementById('wrapper-flow');
+            if (skelFlow && wrapFlow) {
+                skelFlow.classList.add('hidden');
+                wrapFlow.classList.remove('hidden');
+                wrapFlow.classList.add('fade-slide-up'); // Animamos la entrada del canvas
+            }
+
+            const skelStock = document.getElementById('skeleton-stock');
+            const wrapStock = document.getElementById('wrapper-stock');
+            if (skelStock && wrapStock) {
+                skelStock.classList.add('hidden');
+                wrapStock.classList.remove('hidden');
+                wrapStock.classList.add('fade-slide-up'); // Animamos la entrada del canvas
+            }
+            // ----------------------------------------------------------
+
             renderFlowChart(data.charts.flow);
             renderStockChart(data.charts.stock);
             renderRecentActivity(data.recent_activity);
         }
-    } catch (error) { console.error("Error crítico de red:", error); }
+    } catch (error) { 
+        console.error("Error crítico de red:", error); 
+    }
 }
 
 async function fetchTopOutbounds() {

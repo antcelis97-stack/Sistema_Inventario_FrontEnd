@@ -67,13 +67,39 @@
 
             <!-- GRÁFICAS -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div class="card-3d lg:col-span-2 bg-slate-900 border border-gray-800 p-6 rounded-xl">
+                <!-- Gráfica de Flujo -->
+                <div class="card-3d lg:col-span-2 bg-slate-900 border border-gray-800 p-6 rounded-xl flex flex-col">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Flujo de Movimientos (Últimos Meses)</h3>
-                    <div class="h-64"><canvas id="flowChart"></canvas></div>
+                    
+                    <!-- ESQUELETO: Simula un gráfico de barras/líneas -->
+                    <div id="skeleton-flow" class="h-64 w-full flex items-end justify-between pb-6 border-b border-gray-800/50 pt-10 px-2 gap-3">
+                        <div class="skeleton w-full h-[20%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[40%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[80%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[100%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[60%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[30%] rounded-t-sm"></div>
+                        <div class="skeleton w-full h-[15%] rounded-t-sm"></div>
+                    </div>
+
+                    <!-- CONTENEDOR REAL (Oculto al inicio) -->
+                    <div id="wrapper-flow" class="h-64 hidden w-full"><canvas id="flowChart"></canvas></div>
                 </div>
-                <div class="card-3d bg-slate-900 border border-gray-800 p-6 rounded-xl">
+                
+                <!-- Gráfica de Stock -->
+                <div class="card-3d bg-slate-900 border border-gray-800 p-6 rounded-xl flex flex-col">
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Estado del Stock</h3>
-                    <div class="h-64"><canvas id="stockChart"></canvas></div>
+                    
+                    <!-- ESQUELETO: Simula un gráfico de dona -->
+                    <div id="skeleton-stock" class="h-64 w-full flex items-center justify-center">
+                        <div class="skeleton w-48 h-48 rounded-full flex items-center justify-center">
+                            <!-- Agujero del centro del mismo color del fondo -->
+                            <div class="w-32 h-32 bg-slate-900 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- CONTENEDOR REAL (Oculto al inicio) -->
+                    <div id="wrapper-stock" class="h-64 hidden w-full"><canvas id="stockChart"></canvas></div>
                 </div>
             </div>
 
